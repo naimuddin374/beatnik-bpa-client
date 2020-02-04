@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { storeData, updateData } from '../../store/actions/userActions'
 import { API_URL } from '../../store/actions/types';
 import Axios from 'axios'
@@ -9,14 +7,39 @@ import DatePicker from "react-datepicker";
 import dateFormat from 'dateformat';
 import "react-datepicker/dist/react-datepicker.css";
 
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
+import { updateActionStatus } from './../../store/actions/commonActions';
 
-class EntryForm extends React.Component {
+
+class EntryForm extends Component {
     state = {
         departments: [],
-        users: []
+        users: [],
+        id: null,
+        employee_id: null,
+        department_id: 0,
+        supervisor_id: 0,
+        role: 1,
+        type: 1,
+        casual_leave: 10,
+        sick_leave: 10,
+        name: null,
+        designation: null,
+        email: null,
+        password: null,
+        joining_date: new Date(),
+        end_date: new Date(),
+        isContinue: 0,
+        salary: 0,
+        probationPeriod: 0,
+        probation_period: new Date(),
+        status: 1,
+        actionStatus: actionStatus()
     }
     UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
+        // Modal.setAppElement('body');
         if (props.actionType === 'EDIT') {
             this.setState({
                 id: props.editData.id,
@@ -38,30 +61,6 @@ class EntryForm extends React.Component {
                 probation_period: props.editData.probation_period,
                 status: props.editData.status,
                 probationPeriod: props.editData.probation_period ? 1 : 0,
-            })
-        } else {
-            this.setState({
-                departments: [],
-                users: [],
-                id: null,
-                employee_id: null,
-                department_id: 0,
-                supervisor_id: 0,
-                role: 1,
-                type: 1,
-                casual_leave: 10,
-                sick_leave: 10,
-                name: null,
-                designation: null,
-                email: null,
-                password: null,
-                joining_date: new Date(),
-                end_date: new Date(),
-                isContinue: 0,
-                salary: 0,
-                probationPeriod: 0,
-                probation_period: new Date(),
-                status: 1,
             })
         }
         this.faceDepartment()
@@ -114,272 +113,233 @@ class EntryForm extends React.Component {
         } else if (this.props.actionType === 'EDIT') {
             this.props.updateData({ ...data }, data.id)
         }
-        this.props.actionIsDone()
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.updateActionStatus(1)
+                this.props.actionIsDone()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { departments, users, employee_id, department_id, supervisor_id, role, type, casual_leave, sick_leave, name, designation, email, password, joining_date, end_date, salary, status, id, isContinue, probation_period, probationPeriod } = this.state
-        let isDone = name
+        let { departments, users, employee_id, department_id, supervisor_id, role, type, casual_leave, sick_leave, name, designation, email, password, joining_date, end_date, salary, status, id, isContinue, probation_period, probationPeriod, actionStatus } = this.state
+        let isDone = name && role && type && designation && status && actionStatus !== 2
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle("800px")}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">{id ? 'Edit Data' : 'Add New'} </h3>
-                <hr />
-
-                <form onSubmit={this.submitHandler}>
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Department <span>*</span></label>
-                                <select
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{id ? 'Edit Employee' : 'Add New Employee'}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <Form.Group>
+                                <Form.Label>Department</Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="department_id"
                                     defaultValue={department_id}
                                     onChange={this.changeHandler}
                                 >
-                                    <option value="0">Select One</option>
+                                    <option value="">Select One</option>
                                     {Object.keys(departments).length !== 0 &&
                                         departments.map(item => (
                                             <option value={item.id} key={item.id}>{item.name}</option>
                                         ))
                                     }
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Supervisor</label>
-                                <select
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Supervisor</Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="supervisor_id"
                                     defaultValue={supervisor_id}
                                     onChange={this.changeHandler}
                                 >
-                                    <option value="0">Select One</option>
+                                    <option value="">Select One</option>
                                     {Object.keys(users).length !== 0 &&
                                         users.map(item => (
                                             <option value={item.id} key={item.id}>{item.name}</option>
                                         ))
                                     }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Role <span>*</span></label>
-                                <select
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Role<span>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="role"
                                     defaultValue={role}
                                     onChange={this.changeHandler}
                                 >
+                                    <option value="">Select One</option>
                                     <option value="0">Select Role</option>
                                     <option value="1">Employee</option>
                                     <option value="2">HR</option>
                                     <option value="3">Supervisor</option>
                                     <option value="4">Admin</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Type <span>*</span></label>
-                                <select
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Type<span>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="type"
                                     defaultValue={type}
                                     onChange={this.changeHandler}
                                 >
-                                    <option value="0">Select Type</option>
+                                    <option value="">Select One</option>
                                     <option value="1">Full Time</option>
                                     <option value="2">Part Time</option>
                                     <option value="3">Contact</option>
                                     <option value="4">Remote</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Casual Leave <span>*</span></label>
-                                <input
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Casual Leave</Form.Label>
+                                <Form.Control
                                     type="number"
                                     className="form-control"
+                                    placeholder="Enter Casual Leave"
                                     name="casual_leave"
                                     defaultValue={casual_leave}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Sick Leave <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Sick Leave</Form.Label>
+                                <Form.Control
                                     type="number"
                                     className="form-control"
+                                    placeholder="Enter Sick Leave"
                                     name="sick_leave"
                                     defaultValue={sick_leave}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Employee ID <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Employee ID</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
+                                    placeholder="Enter Employee ID"
                                     name="employee_id"
                                     defaultValue={employee_id}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Designation <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Designation<span>*</span></Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
+                                    placeholder="Enter Designation"
                                     name="designation"
                                     defaultValue={designation}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Name <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Full Name<span>*</span></Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
+                                    placeholder="Enter Full Name"
                                     name="name"
                                     defaultValue={name}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Email <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Email<span>*</span></Form.Label>
+                                <Form.Control
                                     type="email"
                                     className="form-control"
+                                    placeholder="Enter Email"
                                     name="email"
                                     defaultValue={email}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Password <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Password<span>*</span></Form.Label>
+                                <Form.Control
                                     type="password"
                                     className="form-control"
+                                    placeholder="Enter Password"
                                     name="password"
                                     defaultValue={password}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Salary <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Salary</Form.Label>
+                                <Form.Control
                                     type="number"
                                     className="form-control"
+                                    placeholder="Enter salary"
                                     name="salary"
                                     defaultValue={salary}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Joining Date <span>*</span></label><br />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Joining Date<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
                                     selected={joining_date}
                                     onChange={this.joiningDateChangeHandler}
+                                    placeholder="Enter Joining Date"
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>End Date <span>*</span></label><br />
-                                <label><input type="checkbox" checked={isContinue} onChange={() => this.setState({ isContinue: !isContinue })} /> Continue</label>
-                                {!isContinue &&
-                                    <DatePicker
-                                        className="form-control"
-                                        selected={end_date}
-                                        onChange={this.endingDateChangeHandler}
-                                    />
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Status <span>*</span></label>
-                                <select
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>End Date<span>*</span></Form.Label>
+                                <Form.Label><input type="checkbox" checked={isContinue} onChange={() => this.setState({ isContinue: !isContinue })} /> Continue</Form.Label>
+                                <DatePicker
+                                    className="form-control"
+                                    selected={end_date}
+                                    onChange={this.endingDateChangeHandler}
+                                    placeholder="Enter End Date"
+                                />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Status<span>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="status"
                                     defaultValue={status}
                                     onChange={this.changeHandler}
                                 >
-                                    <option value="0">Select Status</option>
+                                    <option value="">Select One</option>
                                     <option value="1">Current</option>
                                     <option value="2">Former</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label><input type="checkbox" checked={probationPeriod} onChange={() => this.setState({ probationPeriod: !probationPeriod })} /> No</label><br />
-                                <label>If have probation period</label><br />
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>If have probation period?</Form.Label><br />
+                                <Form.Label><input type="checkbox" checked={probationPeriod} onChange={() => this.setState({ probationPeriod: !probationPeriod })} /> No</Form.Label>
                                 {!probationPeriod &&
                                     <DatePicker
                                         className="form-control"
                                         selected={probation_period}
                                         onChange={this.probationPeriodDateChangeHandler}
-                                    />
-                                }
-                            </div>
-                        </div>
-                    </div>
+                                    />}
+                            </Form.Group>
 
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone}><i className="fa fa-upload"></i> {id ? ' Save' : ' Submit'}</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }
-export default connect(null, { storeData, updateData })(EntryForm)
+export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)

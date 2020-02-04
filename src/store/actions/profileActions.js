@@ -1,8 +1,12 @@
-import { SET_MESSAGE, API_URL} from './types'
+import { SET_MESSAGE, API_URL, ACTION_STATUS } from './types'
 import Axios from 'axios'
 
 // Update profile picture 
 export const updateProfileInfo = (data, id) => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.put(`${API_URL}api/update-user-info/${id}`, data)
         .then(res => {
             dispatch({
@@ -13,7 +17,6 @@ export const updateProfileInfo = (data, id) => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -26,6 +29,10 @@ export const updateProfileInfo = (data, id) => dispatch => {
 
 // Change Password 
 export const updatePassword = (data, id) => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.put(`${API_URL}api/update-password/${id}`, data)
         .then(res => {
             dispatch({
@@ -36,7 +43,6 @@ export const updatePassword = (data, id) => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {

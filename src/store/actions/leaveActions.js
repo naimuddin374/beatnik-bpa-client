@@ -1,8 +1,12 @@
-import { SET_MESSAGE, API_URL } from './types'
+import { SET_MESSAGE, API_URL, ACTION_STATUS } from './types'
 import Axios from 'axios'
 
 // Data Store
 export const storeData = data => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.post(`${API_URL}api/leave`, data)
         .then(res => {
             dispatch({
@@ -13,7 +17,6 @@ export const storeData = data => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -27,6 +30,10 @@ export const storeData = data => dispatch => {
 
 // Data Update
 export const updateData = (data, id) => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.put(`${API_URL}api/leave/${id}`, data)
         .then(res => {
             dispatch({
@@ -37,7 +44,6 @@ export const updateData = (data, id) => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -60,7 +66,6 @@ export const deleteData = id => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -73,6 +78,10 @@ export const deleteData = id => dispatch => {
 
 // Leave Approved
 export const leaveApprove = id => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.get(`${API_URL}api/leave-approve/${id}`)
         .then(res => {
             dispatch({
@@ -83,7 +92,6 @@ export const leaveApprove = id => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -96,6 +104,10 @@ export const leaveApprove = id => dispatch => {
 
 // Leave Reject
 export const leaveReject = (data, id) => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.put(`${API_URL}api/leave-reject/${id}`, data)
         .then(res => {
             dispatch({
@@ -106,7 +118,6 @@ export const leaveReject = (data, id) => dispatch => {
             })
         })
         .catch(err => {
-            console.log(err.response)
             dispatch({
                 type: SET_MESSAGE,
                 payload: {

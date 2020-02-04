@@ -1,24 +1,24 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { leaveReject } from '../../store/actions/leaveActions'
 
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
+import { updateActionStatus } from './../../store/actions/commonActions';
 
-class RejectNote extends React.Component {
-    state = {}
+class RejectNote extends Component {
+    state = {
+        id: "",
+        note: "",
+        status: 2,
+        actionStatus: actionStatus()
+    }
     UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
         if (props.actionType === 'EDIT') {
             this.setState({
                 id: props.editData.id,
                 note: props.editData.note,
-                status: 2,
-            })
-        } else {
-            this.setState({
-                id: "",
-                note: "",
                 status: 2,
             })
         }
@@ -31,47 +31,46 @@ class RejectNote extends React.Component {
     submitHandler = event => {
         event.preventDefault()
         this.props.leaveReject({ ...this.state }, this.state.id)
-        this.props.actionIsDone()
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.updateActionStatus(1)
+                this.props.actionIsDone()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { id, note } = this.state
-        let isDone = note
+        let { note } = this.state
+        let isDone = note && actionStatus !== 2
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle("600px")}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">{id ? 'Leave Reject' : 'Add New'} </h3>
-                <hr />
-                <form onSubmit={this.submitHandler}>
-
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="form-group">
-                                <label>Enter Note <span>*</span></label>
-                                <textarea
-                                    type="text"
-                                    className="form-control"
-                                    name="note"
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Reject Leave</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <Form.Group>
+                                <Form.Label>Reject Note<span>*</span></Form.Label>
+                                <Form.Control
+                                    as="textarea"
                                     rows="6"
+                                    className="form-control"
+                                    placeholder="Enter Reject Note"
+                                    name="note"
                                     defaultValue={note}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone}><i className="fa fa-upload"></i> {id ? ' Confirm' : ' Submit'}</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            </Form.Group>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }
-export default connect(null, { leaveReject })(RejectNote)
+export default connect(null, { leaveReject, updateActionStatus })(RejectNote)

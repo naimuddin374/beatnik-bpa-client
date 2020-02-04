@@ -1,5 +1,14 @@
-import { API_URL, SET_MESSAGE } from './types';
+import { API_URL, SET_MESSAGE, ACTION_STATUS } from './types';
 import Axios from 'axios'
+
+// Update action status 
+export const updateActionStatus = status => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: status
+    })
+}
+
 
 // Update profile picture 
 export const storeSubscribe = data => dispatch => {

@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { storeData, updateData } from '../../store/actions/leaveActions'
 import DatePicker from "react-datepicker";
 import dateFormat from 'dateformat';
@@ -10,13 +8,27 @@ import authUser from '../../util/authUser';
 import Axios from 'axios';
 import { API_URL } from '../../store/actions/types';
 
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
+import { updateActionStatus } from './../../store/actions/commonActions';
 
-class EntryForm extends React.Component {
+class EntryForm extends Component {
     state = {
-        userInfo: []
+        userInfo: [],
+        id: "",
+        user_id: authUser().id,
+        supervisor_id: 1,
+        type: 1,
+        start_date: new Date(),
+        end_date: new Date(),
+        total_day: 1,
+        purpose: "",
+        note: "",
+        status: 0,
+        actionStatus: actionStatus()
     }
     UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
         if (props.actionType === 'EDIT') {
             this.setState({
                 id: props.editData.id,
@@ -26,19 +38,6 @@ class EntryForm extends React.Component {
                 total_day: props.editData.total_day,
                 purpose: props.editData.purpose,
                 note: props.editData.note,
-                status: 0,
-            })
-        } else {
-            this.setState({
-                id: "",
-                user_id: authUser().id,
-                supervisor_id: 1,
-                type: 1,
-                start_date: new Date(),
-                end_date: new Date(),
-                total_day: 1,
-                purpose: "",
-                note: "",
                 status: 0,
             })
         }
@@ -80,11 +79,20 @@ class EntryForm extends React.Component {
         } else if (this.props.actionType === 'EDIT') {
             this.props.updateData({ ...data }, data.id)
         }
-        this.props.actionIsDone()
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.updateActionStatus(1)
+                this.props.actionIsDone()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { id, type, start_date, end_date, total_day, purpose, note, userInfo } = this.state
-        let isDone = type && start_date && end_date
+        let { type, start_date, end_date, total_day, purpose, note, userInfo, actionStatus } = this.state
+        let isDone = type && start_date && end_date && actionStatus !== 2
 
         let casual_leave = 0;
         let sick_leave = 0;
@@ -103,23 +111,24 @@ class EntryForm extends React.Component {
             }
         }
 
-
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle("800px")}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">{id ? 'Edit Data' : 'Add New'} </h3>
-                <hr />
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Leave Apply</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <div className="row">
+                                <div className="col-lg-12">
+                                    <p className="text-danger">{(Number(type) === 1 && `You have remaining leave ${casual_leave}`) || (Number(type) === 2 && `You have remaining leave ${sick_leave}`) || (Number(type) === 3 && `You already taken ${other_leave} leave`)}</p>
+                                </div>
+                            </div>
 
-                <form onSubmit={this.submitHandler}>
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Leave Type <span>*</span></label>
-                                <select
+                            <Form.Group>
+                                <Form.Label>Leave Type<span>*</span></Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="type"
                                     defaultValue={type}
@@ -129,89 +138,66 @@ class EntryForm extends React.Component {
                                     <option value="1">Casual</option>
                                     <option value="2">Sick</option>
                                     <option value="3">Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Purpose</label>
-                                <input
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Purpose</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
+                                    placeholder="Enter Purpose"
                                     name="purpose"
                                     defaultValue={purpose}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <p className="text-danger">{(Number(type) === 1 && `You have remaining leave ${casual_leave}`) || (Number(type) === 2 && `You have remaining leave ${sick_leave}`) || (Number(type) === 3 && `You already taken ${other_leave} leave`)}</p>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Start Date <span>*</span></label><br />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>From<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
                                     selected={start_date}
                                     onChange={this.startDateChangeHandler}
+                                    placeholder="From"
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>End Date <span>*</span></label><br />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>To<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
                                     selected={end_date}
                                     onChange={this.endDateChangeHandler}
+                                    placeholder="To"
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Total Day <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Total Day <span>*</span></Form.Label>
+                                <Form.Control
                                     type="number"
                                     className="form-control"
+                                    placeholder="Enter Total Day"
                                     name="total_day"
                                     max={maxLeave}
                                     defaultValue={total_day}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <label>Note</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Note</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
+                                    placeholder="Enter Note"
                                     name="note"
                                     defaultValue={note}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone || (Number(total_day) > maxLeave)}><i className="fa fa-upload"></i> {id ? ' Save' : ' Submit'}</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            </Form.Group>
+                            <Button type="submit" block variant="dark" disabled={!isDone || (Number(total_day) > maxLeave)}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }
-export default connect(null, { storeData, updateData })(EntryForm)
+export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)

@@ -30,7 +30,7 @@ class Order extends Component {
                                                     <td className="serial">1.</td>
                                                     <td className="avatar">
                                                         <div className="round-img">
-                                                            <a href="#"><img className="rounded-circle" src="images/avatar/1.jpg" alt="" /></a>
+                                                            <a href="#blank"><img className="rounded-circle" src="images/avatar/1.jpg" alt="" /></a>
                                                         </div>
                                                     </td>
                                                     <td> #5469 </td>
@@ -45,7 +45,7 @@ class Order extends Component {
                                                     <td className="serial">2.</td>
                                                     <td className="avatar">
                                                         <div className="round-img">
-                                                            <a href="#"><img className="rounded-circle" src="images/avatar/2.jpg" alt="" /></a>
+                                                            <a href="#blank"><img className="rounded-circle" src="images/avatar/2.jpg" alt="" /></a>
                                                         </div>
                                                     </td>
                                                     <td> #5468 </td>
@@ -60,7 +60,7 @@ class Order extends Component {
                                                     <td className="serial">3.</td>
                                                     <td className="avatar">
                                                         <div className="round-img">
-                                                            <a href="#"><img className="rounded-circle" src="images/avatar/3.jpg" alt="" /></a>
+                                                            <a href="#blank"><img className="rounded-circle" src="images/avatar/3.jpg" alt="" /></a>
                                                         </div>
                                                     </td>
                                                     <td> #5467 </td>
@@ -75,7 +75,7 @@ class Order extends Component {
                                                     <td className="serial">4.</td>
                                                     <td className="avatar">
                                                         <div className="round-img">
-                                                            <a href="#"><img className="rounded-circle" src="images/avatar/4.jpg" alt="" /></a>
+                                                            <a href="#blank"><img className="rounded-circle" src="images/avatar/4.jpg" alt="" /></a>
                                                         </div>
                                                     </td>
                                                     <td> #5466 </td>
@@ -90,7 +90,7 @@ class Order extends Component {
                                                     <td className="serial">5.</td>
                                                     <td className="avatar pb-0">
                                                         <div className="round-img">
-                                                            <a href="#"><img className="rounded-circle" src="images/avatar/6.jpg" alt="" /></a>
+                                                            <a href="#blank"><img className="rounded-circle" src="images/avatar/6.jpg" alt="" /></a>
                                                         </div>
                                                     </td>
                                                     <td> #5465 </td>

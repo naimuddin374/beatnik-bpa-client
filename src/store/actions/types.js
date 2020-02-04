@@ -2,6 +2,7 @@ export const API_URL = 'http://localhost:8000/'
 // export const API_URL = 'https://btlbd.xyz/fantasy-api/'
 export const BASE_URL = process.env.PUBLIC_URL
 
+export const ACTION_STATUS = 'ACTION_STATUS'
 export const SET_MESSAGE = 'SET_MESSAGE'
 export const SET_ERROR = 'SET_ERROR'
 export const SET_HOME_DATA = 'SET_HOME_DATA'

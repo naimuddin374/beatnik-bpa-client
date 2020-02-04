@@ -38,7 +38,7 @@ class EmployeeList extends Component {
                                         <div className="card">
                                             <div className="card-body profile-card-body">
                                                 <div className="mx-auto d-block">
-                                                    <img className="rounded-circle mx-auto d-block employee-image" src={item.image ? `${API_URL + item.image}` : `${BASE_URL}images/admin.jpg`} alt="Card image cap" />
+                                                    <img className="rounded-circle mx-auto d-block employee-image" src={item.image ? `${API_URL + item.image}` : `${BASE_URL}images/admin.jpg`} alt="CardImageCap" />
                                                     <h4 className="text-sm-center mt-2 mb-1 employee-name"><Link to={`${BASE_URL}/profile/${item.id}`}>{item.name}</Link></h4>
                                                     <h5 className="text-sm-center mt-2 mb-1">{item.designation}</h5>
                                                     <div className="location text-sm-center"><i className="fa fa-map-marker"></i> {item.address}</div>
@@ -46,9 +46,9 @@ class EmployeeList extends Component {
                                                 </div>
                                                 <hr />
                                                 <div className="card-text text-sm-center">
-                                                    <a href={`${item.facebook}`} target="_blank"><i className="fa fa-facebook pr-1"></i></a>
-                                                    <a href={`${item.linkedin}`} target="_blank"><i className="fa fa-linkedin pr-1"></i></a>
-                                                    <a href={`${item.twitter}`} target="_blank"><i className="fa fa-twitter pr-1"></i></a>
+                                                    <a href={`${item.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>
+                                                    <a href={`${item.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>
+                                                    <a href={`${item.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>
                                                 </div>
                                             </div>
                                         </div>

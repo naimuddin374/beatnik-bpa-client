@@ -1,22 +1,24 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { storeData, updateData } from '../../store/actions/departmentActions'
 
-class EntryForm extends React.Component {
-    state = {}
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
+import { updateActionStatus } from '../../store/actions/commonActions';
+
+
+class EntryForm extends Component {
+    state = {
+        id: "",
+        name: "",
+        actionStatus: actionStatus()
+    }
     UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
         if (props.actionType === 'EDIT') {
             this.setState({
                 id: props.editData.id,
                 name: props.editData.name,
-            })
-        } else {
-            this.setState({
-                id: "",
-                name: "",
             })
         }
     }
@@ -32,46 +34,45 @@ class EntryForm extends React.Component {
         } else if (this.props.actionType === 'EDIT') {
             this.props.updateData({ ...this.state }, this.state.id)
         }
-        this.props.actionIsDone()
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.updateActionStatus(1)
+                this.props.actionIsDone()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { id, name } = this.state
-        let isDone = name
+        let { id, name, actionStatus } = this.state
+        let isDone = name && actionStatus !== 2
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle()}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">{id ? 'Edit Data' : 'Add New'} </h3>
-                <hr />
-
-                <form onSubmit={this.submitHandler}>
-                    <div className="row">
-                        <div className="col-lg-6">
-                            <div className="form-group">
-                                <input
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{id ? 'Edit Department' : 'Add New Department'} </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <Form.Group>
+                                <Form.Label>Department Name<span>*</span></Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="name"
                                     defaultValue={name}
                                     onChange={this.changeHandler}
-                                    placeholder="Enter Name"
+                                    placeholder="Enter Department Name"
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone}><i className="fa fa-upload"></i> {id ? ' Save' : ' Submit'}</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            </Form.Group>
+                            <Button type="submit" variant="dark" block disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }
-export default connect(null, { storeData, updateData })(EntryForm)
+export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)

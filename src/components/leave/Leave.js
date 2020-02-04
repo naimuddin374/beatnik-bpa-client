@@ -111,7 +111,7 @@ class Leave extends Component {
                 accessor: 'avatar',
                 Cell: row => <span className="avatar">
                     <div className="round-img">
-                        <img className="rounded-circle" src={row.original.image ? API_URL + row.original.image : "images/avatar/1.jpg"} alt="Employee Avatar" height="50" />
+                        <img className="employee-image" src={row.original.image ? API_URL + row.original.image : "images/avatar/1.jpg"} alt="Employee Avatar" height="50" />
                     </div>
                 </span>,
             },

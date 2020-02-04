@@ -1,4 +1,14 @@
-.flot-base {
-    display: none;
-    z-index: -1;
-}
+/* @import './assets/css/normalize.min.css'; */
+/* @import './assets/css/bootstrap.min.css'; */
+/* @import './assets/css/font-awesome.min.css'; */
+/* @import './assets/css/themify-icons.css'; */
+/* @import './assets/css/pe-icon-7-stroke.min.css'; */
+/* @import './assets/css/flag-icon.min.css'; */
+/* @import './assets/css/cs-skin-elastic.css'; */
+/* @import './assets/css/chartist.min.css'; */
+/* @import './assets/css/jqvmap.min.css'; */
+/* @import './assets/css/style.css'; */
+/* @import './assets/css/weather-icons.css'; */
+/* @import './assets/css/fullcalendar.min.css'; */
+
+@import './assets/css/style.css';

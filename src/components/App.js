@@ -1,11 +1,13 @@
 import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
+
 import { connect } from 'react-redux';
 
 import AlertMessage from './layout/AlertMessage';
 
 import Routes from './Routes';
-import LoginPage from './auth/LoginPage';
+import Login from './auth/Login';
 
 class App extends React.Component {
     render() {
@@ -15,7 +17,7 @@ class App extends React.Component {
                 <AlertMessage />
                 {isAuth ?
                     <Routes history={this.props.history} /> :
-                    <LoginPage history={this.props.history} />
+                    <Login history={this.props.history} />
                 }
             </React.Fragment>
         )

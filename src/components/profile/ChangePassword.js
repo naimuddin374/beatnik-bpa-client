@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { updatePassword } from '../../store/actions/profileActions'
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
 
-class ChangePassword extends React.Component {
-    state = {}
-    UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
-        this.setState({
-            id: props.user.id,
-            current_password: '',
-            password: '',
-            confirmPassword: '',
-        })
+class ChangePassword extends Component {
+    state = {
+        currentPassword: '',
+        password: '',
+        confirmPassword: '',
+        actionStatus: actionStatus()
     }
     changeHandler = event => {
         this.setState({
@@ -22,66 +19,66 @@ class ChangePassword extends React.Component {
     }
     submitHandler = event => {
         event.preventDefault()
-        this.props.updatePassword(this.state, this.state.id)
-        this.props.isClose()
+        this.props.updatePassword(this.state, this.props.user.id)
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.isClose()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { current_password, password, confirmPassword } = this.state
-        let isDone = current_password && password && confirmPassword && (password === confirmPassword)
+        let { currentPassword, password, confirmPassword, actionStatus } = this.state
+        let isDone = currentPassword && password && confirmPassword && (password === confirmPassword) && actionStatus !== 2
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle("400px")}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">Change Password </h3>
-                <hr />
-
-                <form onSubmit={this.submitHandler}>
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="form-group">
-                                <label>Enter Current Password <span>*</span></label>
-                                <input
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Change Your Password</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <Form.Group>
+                                <Form.Label>Enter Current Password<span>*</span></Form.Label>
+                                <Form.Control
                                     type="password"
                                     className="form-control"
-                                    name="current_password"
-                                    defaultValue={current_password}
+                                    placeholder="Enter Current Password"
+                                    name="currentPassword"
+                                    defaultValue={currentPassword}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                            <div className="form-group">
-                                <label>Enter New Password <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Enter New Password<span>*</span></Form.Label>
+                                <Form.Control
                                     type="password"
                                     className="form-control"
+                                    placeholder="Enter New Password"
                                     name="password"
                                     defaultValue={password}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                            <div className="form-group">
-                                <label>Enter Confirm Password <span>*</span></label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Enter Confirm Password<span>*</span></Form.Label>
+                                <Form.Control
                                     type="password"
                                     className="form-control"
+                                    placeholder="Enter Confirm Password"
                                     name="confirmPassword"
                                     defaultValue={confirmPassword}
                                     onChange={this.changeHandler}
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone}><i className="fa fa-upload"></i> Save</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            </Form.Group>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }

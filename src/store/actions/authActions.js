@@ -1,35 +1,27 @@
-import { SET_MESSAGE, API_URL, SET_USER, BASE_URL } from './types'
+import { SET_MESSAGE, API_URL, SET_USER, BASE_URL, ACTION_STATUS } from './types'
 import Axios from 'axios'
 
 // Login
-export const Login = (data, history) => dispatch => {
+export const login = data => dispatch => {
+    dispatch({
+        type: ACTION_STATUS,
+        payload: 2
+    })
     Axios.post(`${API_URL}api/login`, data)
         .then(res => {
             let user = res.data.user
-            if (Object.keys(user).length !== 0) {
-                localStorage.setItem('auth', JSON.stringify(user))
-                dispatch({
-                    type: SET_USER,
-                    payload: user
-                })
-                dispatch({
-                    type: SET_MESSAGE,
-                    payload: {
-                        message: res.data.message,
-                        type: 'success',
-                    }
-                })
-                history.push(`${BASE_URL}/`)
-            } else {
-                dispatch({
-                    type: SET_MESSAGE,
-                    payload: {
-                        message: "Invalid email or password.",
-                        type: 'error',
-                    }
-                })
-            }
-            // window.location.reload();
+            localStorage.setItem('auth', JSON.stringify(user))
+            dispatch({
+                type: SET_USER,
+                payload: user
+            })
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: res.data.message,
+                    type: 'success',
+                }
+            })
         })
         .catch(err => {
             dispatch({

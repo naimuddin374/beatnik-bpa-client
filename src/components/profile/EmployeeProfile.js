@@ -36,9 +36,9 @@ class EmployeeProfile extends Component {
                                                     <h2>{user.name}</h2>
                                                     <h4>{user.designation}</h4>
                                                     <div className="card-text text-sm-center">
-                                                        <a href={`${user.facebook}`} target="_blank"><i className="fa fa-facebook pr-1"></i></a>
-                                                        <a href={`${user.linkedin}`} target="_blank"><i className="fa fa-linkedin pr-1"></i></a>
-                                                        <a href={`${user.twitter}`} target="_blank"><i className="fa fa-twitter pr-1"></i></a>
+                                                        <a href={`${user.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>
+                                                        <a href={`${user.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>
+                                                        <a href={`${user.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>
                                                     </div>
                                                     <p className="boi-padding">{user.bio}</p>
                                                 </div>

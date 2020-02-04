@@ -1,17 +1,33 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux'
-import Modal from 'react-modal'
-import { modalStyle } from '../../util/helper';
 import { updateProfileInfo } from '../../store/actions/profileActions'
 import DatePicker from "react-datepicker";
 import dateFormat from 'dateformat';
 import "react-datepicker/dist/react-datepicker.css";
 import { BASE_URL } from '../../store/actions/types';
 
-class EditProfile extends React.Component {
-    state = {}
+import Modal from 'react-bootstrap/Modal';
+import { Button, Form } from 'react-bootstrap';
+import { actionStatus } from '../../util/helper';
+import { updateActionStatus } from '../../store/actions/commonActions';
+
+class EditProfile extends Component {
+    state = {
+        id: '',
+        name: '',
+        contact: '',
+        personal_email: '',
+        blood_group: '',
+        address: '',
+        bio: '',
+        facebook: '',
+        linkedin: '',
+        twitter: '',
+        imgPath: '',
+        date_of_birth: new Date(),
+        actionStatus: actionStatus()
+    }
     UNSAFE_componentWillReceiveProps(props) {
-        Modal.setAppElement('body');
         this.setState({
             id: props.user.id,
             name: props.user.name,
@@ -56,103 +72,97 @@ class EditProfile extends React.Component {
         let { date_of_birth } = data
         data.date_of_birth = dateFormat(date_of_birth, "yyyy-mm-dd")
         this.props.updateProfileInfo({ ...data }, data.id)
-        this.props.actionIsDone()
+
+        setInterval(() => {
+            if (actionStatus() === 4) {
+                this.props.updateActionStatus(1)
+                this.props.actionIsDone()
+            } else {
+                this.setState({
+                    actionStatus: actionStatus()
+                })
+            }
+        }, 500)
     }
     render() {
-        let { id, name, contact, personal_email, date_of_birth, blood_group, address, imgPath, bio, facebook, linkedin, twitter } = this.state
-        let isDone = name
+        let { name, contact, personal_email, date_of_birth, blood_group, address, imgPath, bio, facebook, linkedin, twitter, actionStatus } = this.state
+        let isDone = name && contact && actionStatus !== 2
         return (
-            <Modal
-                isOpen={this.props.isOpen}
-                onRequestClose={this.props.isClose}
-                style={modalStyle("800px")}
-            >
-                <button type="button" className="popup-close" onClick={this.props.isClose}>&times;</button>
-                <h3 className="mb-2">Edit Information</h3>
-                <hr />
-
-                <form onSubmit={this.submitHandler}>
-                    <div className="row mb-3">
-                        <div className="col-lg-12">
-                            <div className="text-center">
-                                <label htmlFor="image" className="bmd-label-floating">
+            <Fragment>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Edit Information</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.submitHandler}>
+                            <Form.Group>
+                                <Form.Label>
                                     {imgPath && <img className="align-self-center rounded-circle mr-3" width="100" height="100" alt="ProfilePicture" src={imgPath} />}
-                                </label><br />
-                                <input type="file" id="image" onChange={this.fileUploadHandler} />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Name <span>*</span></label>
-                                <input
+                                </Form.Label>
+                                <Form.Control
+                                    type="file"
+                                    onChange={this.fileUploadHandler}
+                                />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Full Name<span>*</span></Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="name"
                                     defaultValue={name}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Full Name"
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Personal Email</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Email Address</Form.Label>
+                                <Form.Control
                                     type="email"
                                     className="form-control"
                                     name="personal_email"
                                     defaultValue={personal_email}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Email Address"
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Contact Number</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Contact Number<span>*</span></Form.Label>
+                                <Form.Control
                                     type="number"
                                     className="form-control"
                                     name="contact"
                                     defaultValue={contact}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Contact Number"
                                 />
-                            </div>
-                        </div>
+                            </Form.Group>
 
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Start Date <span>*</span></label><br />
+                            <Form.Group>
+                                <Form.Label>Date of Birth<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
                                     selected={date_of_birth}
                                     onChange={this.dateChangeHandler}
+                                    placeholder="Date of Birth"
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Address</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Address</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="address"
                                     defaultValue={address}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Address"
                                 />
-                            </div>
-                        </div>
-
-                        <div className="col-lg-6 col-md-12">
-                            <div className="form-group">
-                                <label>Blood Group</label>
-                                <select
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Blood Group</Form.Label>
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
                                     name="blood_group"
                                     defaultValue={blood_group}
@@ -167,72 +177,58 @@ class EditProfile extends React.Component {
                                     <option value="B-">B-</option>
                                     <option value="O+">O+</option>
                                     <option value="O-">O-</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="form-group">
-                                <label>Biography</label>
-                                <textarea
-                                    rows="3"
+                                </Form.Control>
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Biography</Form.Label>
+                                <Form.Control
+                                    type="text"
                                     className="form-control"
                                     name="bio"
                                     defaultValue={bio}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Biography"
                                 />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-lg-4 col-md-12">
-                            <div className="form-group">
-                                <label>Facebook Link</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Facebook Link</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="facebook"
                                     defaultValue={facebook}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter Facebook Profile Link"
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-12">
-                            <div className="form-group">
-                                <label>Linkedin Link</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>linkedin Link</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="linkedin"
                                     defaultValue={linkedin}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter linkedin Profile Link"
                                 />
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-12">
-                            <div className="form-group">
-                                <label>Twitter Link</label>
-                                <input
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Twitter Link</Form.Label>
+                                <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="twitter"
                                     defaultValue={twitter}
                                     onChange={this.changeHandler}
+                                    placeholder="Enter twitter Profile Link"
                                 />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-lg-8 text-center offset-lg-2">
-                            <button type="submit" className="btn btn-primary btn-sm"
-                                disabled={!isDone}><i className="fa fa-upload"></i> {id ? ' Save' : ' Submit'}</button>
-                        </div>
-                    </div>
-                </form>
-            </Modal>
+                            </Form.Group>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+            </Fragment>
         )
     }
 }
-export default connect(null, { updateProfileInfo })(EditProfile)
+export default connect(null, { updateProfileInfo, updateActionStatus })(EditProfile)

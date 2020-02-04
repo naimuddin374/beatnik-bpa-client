@@ -1,3 +1,10 @@
+import store from '../store';
+
+export const actionStatus = () => {
+    const state = store.getState();
+    return state.common.actionStatus
+}
+
 export const textLimit = (text, limit = 100) => {
     if (!text) {
         return null

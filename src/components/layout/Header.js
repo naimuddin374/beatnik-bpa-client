@@ -1,101 +1,48 @@
-import React from 'react'
-import TopRightBar from './TopRightBar';
+import React, { Component, Fragment } from 'react'
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { connect } from 'react-redux';
+import { logout } from '../../store/actions/authActions';
+import authUser from '../../util/authUser';
+import { API_URL } from '../../store/actions/types';
 import { Link } from 'react-router-dom';
-import { BASE_URL } from '../../store/actions/types';
+import ChangePassword from '../profile/ChangePassword';
+import logo from '../assets/images/logo.png';
 
-class Header extends React.Component {
+class Header extends Component {
+    state = {
+        isModalOpen: false,
+        user: []
+    }
+    closeModal = () => {
+        this.setState({
+            isModalOpen: false,
+        })
+    }
     render() {
         return (
-            <header id="header" className="header">
-                <div className="top-left">
-                    <div className="navbar-header">
-                        <Link className="navbar-brand" to={`${BASE_URL}`}><img src="images/logo.png" alt="Logo" height="43" /></Link>
-                        <Link className="navbar-brand hidden" to={`${BASE_URL}`}><img src="images/logo.png" alt="Logo" height="43" /></Link>
-                        <a id="menuToggle" className="menutoggle"><i className="fa fa-bars"></i></a>
-                    </div>
-                </div>
-                <div className="top-right">
-                    <div className="header-menu">
-                        <div className="header-left">
-
-                            <div className="dropdown for-notification">
-                                <button className="btn btn-secondary dropdown-toggle" type="button" id="notification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i className="fa fa-bell"></i>
-                                    <span className="count bg-danger">3</span>
-                                </button>
-                                <div className="dropdown-menu" aria-labelledby="notification">
-                                    <p className="red">You have 3 Notification</p>
-                                    <a className="dropdown-item media" href="#">
-                                        <i className="fa fa-check"></i>
-                                        <p>Server #1 overloaded.</p>
-                                    </a>
-                                    <a className="dropdown-item media" href="#">
-                                        <i className="fa fa-info"></i>
-                                        <p>Server #2 overloaded.</p>
-                                    </a>
-                                    <a className="dropdown-item media" href="#">
-                                        <i className="fa fa-warning"></i>
-                                        <p>Server #3 overloaded.</p>
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div className="dropdown for-message">
-                                <button className="btn btn-secondary dropdown-toggle" type="button" id="message" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i className="fa fa-envelope"></i>
-                                    <span className="count bg-primary">4</span>
-                                </button>
-                                <div className="dropdown-menu" aria-labelledby="message">
-                                    <p className="red">You have 4 Mails</p>
-                                    <a className="dropdown-item media" href="#">
-                                        <span className="photo media-left">
-                                            <img alt="avatar" src="images/avatar/1.jpg" />
-                                        </span>
-                                        <div className="message media-body">
-                                            <span className="name float-left">Jonathan Smith</span>
-                                            <span className="time float-right">Just now</span>
-                                            <p>Hello, this is an example msg</p>
-                                        </div>
-                                    </a>
-                                    <a className="dropdown-item media" href="#">
-                                        <span className="photo media-left">
-                                            <img alt="avatar" src="images/avatar/2.jpg" />
-                                        </span>
-                                        <div className="message media-body">
-                                            <span className="name float-left">Jack Sanders</span>
-                                            <span className="time float-right">5 minutes ago</span>
-                                            <p>Lorem ipsum dolor sit amet, consectetur</p>
-                                        </div>
-                                    </a>
-                                    <a className="dropdown-item media" href="#">
-                                        <span className="photo media-left">
-                                            <img alt="avatar" src="images/avatar/3.jpg" />
-                                        </span>
-                                        <div className="message media-body">
-                                            <span className="name float-left">Cheryl Wheeler</span>
-                                            <span className="time float-right">10 minutes ago</span>
-                                            <p>Hello, this is an example msg</p>
-                                        </div>
-                                    </a>
-                                    <a className="dropdown-item media" href="#">
-                                        <span className="photo media-left">
-                                            <img alt="avatar" src="images/avatar/4.jpg" />
-                                        </span>
-                                        <div className="message media-body">
-                                            <span className="name float-left">Rachel Santos</span>
-                                            <span className="time float-right">15 minutes ago</span>
-                                            <p>Lorem ipsum dolor sit amet, consectetur</p>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <TopRightBar history={this.props.history} />
-                    </div>
-                </div>
-            </header>
+            <Fragment>
+                <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="header-menu-area">
+                    <Link to="/">
+                        <img className="header-logo" src={logo} alt="BeatnikLogo" />
+                    </Link>
+                    <Nav>
+                        <img className="user-avatar" src={authUser().image ? `${API_URL + authUser().image}` : 'images/admin.jpg'} alt="User Avatar" />
+                        <NavDropdown title={authUser().name} id="collasible-nav-dropdown">
+                            <Link className="dropdown-item" to={`/my-profile`}> <i className="fa fa-user"></i> Profile</Link>
+                            <NavDropdown.Item href="#action" onClick={() => this.setState({ isModalOpen: true })}><i className="fa fa-lock"></i> Change Password</NavDropdown.Item>
+                            <NavDropdown.Item href="#action" onClick={() => this.props.logout(this.props.history)}><i className="fa fa-power-off"></i> Logout</NavDropdown.Item>
+                        </NavDropdown>
+                    </Nav>
+                    <ChangePassword
+                        isOpen={this.state.isModalOpen}
+                        isClose={this.closeModal}
+                        user={authUser()}
+                    />
+                </Navbar>
+            </Fragment>
         )
     }
 }
-export default Header
+export default connect(null, { logout })(Header)
