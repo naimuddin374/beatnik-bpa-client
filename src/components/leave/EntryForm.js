@@ -55,16 +55,8 @@ class EntryForm extends Component {
             [event.target.name]: event.target.value
         })
     }
-    startDateChangeHandler = date => {
-        this.setState({
-            start_date: date
-        })
-    }
-    endDateChangeHandler = date => {
-        this.setState({
-            end_date: date
-        })
-    }
+    startDateChangeHandler = start_date => this.setState({ start_date })
+    endDateChangeHandler = end_date => this.setState({ end_date })
     submitHandler = event => {
         event.preventDefault()
         let data = {

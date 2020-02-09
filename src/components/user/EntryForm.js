@@ -84,21 +84,9 @@ class EntryForm extends Component {
             [event.target.name]: event.target.value
         })
     }
-    joiningDateChangeHandler = date => {
-        this.setState({
-            joining_date: date
-        })
-    }
-    endingDateChangeHandler = date => {
-        this.setState({
-            end_date: date
-        })
-    }
-    probationPeriodDateChangeHandler = date => {
-        this.setState({
-            probation_period: date
-        })
-    }
+    joiningDateHandler = joining_date => this.setState({ joining_date })
+    endingDateHandler = end_date => this.setState({ end_date })
+    probationPeriodDateHandler = probation_period => this.setState({ probation_period })
     submitHandler = event => {
         event.preventDefault()
         let data = {
@@ -295,7 +283,7 @@ class EntryForm extends Component {
                                 <DatePicker
                                     className="form-control"
                                     selected={joining_date}
-                                    onChange={this.joiningDateChangeHandler}
+                                    onChange={this.joiningDateHandler}
                                     placeholder="Enter Joining Date"
                                 />
                             </Form.Group>
@@ -305,7 +293,7 @@ class EntryForm extends Component {
                                 <DatePicker
                                     className="form-control"
                                     selected={end_date}
-                                    onChange={this.endingDateChangeHandler}
+                                    onChange={this.endingDateHandler}
                                     placeholder="Enter End Date"
                                 />
                             </Form.Group>
@@ -330,7 +318,7 @@ class EntryForm extends Component {
                                     <DatePicker
                                         className="form-control"
                                         selected={probation_period}
-                                        onChange={this.probationPeriodDateChangeHandler}
+                                        onChange={this.probationPeriodDateHandler}
                                     />}
                             </Form.Group>
 

@@ -48,11 +48,7 @@ class EditProfile extends Component {
             [event.target.name]: event.target.value
         })
     }
-    dateChangeHandler = date => {
-        this.setState({
-            date_of_birth: date
-        })
-    }
+    dateChangeHandler = date_of_birth => this.setState({ date_of_birth })
     fileUploadHandler = event => {
         let reader = new FileReader()
         let _this = this

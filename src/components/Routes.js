@@ -13,6 +13,7 @@ import Leave from './leave/Leave';
 import MyProfile from './profile/MyProfile';
 import EmployeeList from './profile/EmployeeList';
 import EmployeeProfile from './profile/EmployeeProfile';
+import Meeting from './meeting/Meeting';
 
 class Routes extends React.Component {
     render() {
@@ -25,14 +26,15 @@ class Routes extends React.Component {
 
                     <div id="right-panel" className="right-panel">
                         <Switch>
-                            <Route path={`${BASE_URL}/profile/:id`} component={EmployeeProfile} history={this.props.history} />
-                            <Route path={`${BASE_URL}/my-profile`} component={MyProfile} history={this.props.history} />
-                            <Route path={`${BASE_URL}/leave`} component={Leave} history={this.props.history} />
-                            <Route path={`${BASE_URL}/employee`} component={EmployeeList} history={this.props.history} />
-                            <Route path={`${BASE_URL}/user`} component={User} history={this.props.history} />
-                            <Route path={`${BASE_URL}/department`} component={Department} history={this.props.history} />
-                            <Route path={`${BASE_URL}/`} exact component={Home} history={this.props.history} />
-                            <Route path={`*`} exact component={Home} history={this.props.history} />
+                            <Route path='/meeting' component={Meeting} history={this.props.history} />
+                            <Route path='/profile/:id' component={EmployeeProfile} history={this.props.history} />
+                            <Route path='/my-profile' component={MyProfile} history={this.props.history} />
+                            <Route path='/leave' component={Leave} history={this.props.history} />
+                            <Route path='/employee' component={EmployeeList} history={this.props.history} />
+                            <Route path='/user' component={User} history={this.props.history} />
+                            <Route path='/department' component={Department} history={this.props.history} />
+                            <Route path='/' exact component={Home} history={this.props.history} />
+                            <Route path='*' exact component={Home} history={this.props.history} />
                         </Switch>
                         <Footer />
                     </div>
