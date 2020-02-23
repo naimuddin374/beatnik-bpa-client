@@ -4,46 +4,43 @@ import { storeData, updateData } from '../../store/actions/leaveActions'
 import DatePicker from "react-datepicker";
 import dateFormat from 'dateformat';
 import "react-datepicker/dist/react-datepicker.css";
-import authUser from '../../util/authUser';
 import Axios from 'axios';
 import { API_URL } from '../../store/actions/types';
-
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
-import { updateActionStatus } from './../../store/actions/commonActions';
+
 
 class EntryForm extends Component {
-    state = {
-        userInfo: [],
-        id: "",
-        user_id: authUser().id,
-        supervisor_id: 1,
-        type: 1,
-        start_date: new Date(),
-        end_date: new Date(),
-        total_day: 1,
-        purpose: "",
-        note: "",
-        status: 0,
-        actionStatus: actionStatus()
+    constructor(props) {
+        super(props);
+        this.state = {
+            userInfo: [],
+            id: props.editData.id || null,
+            user_id: props.auth.user.id,
+            supervisor_id: props.editData.supervisor_id || 0,
+            type: props.editData.type || 1,
+            start_date: props.editData.start_date || null,
+            end_date: props.editData.end_date || null,
+            total_day: props.editData.total_day || 1,
+            purpose: props.editData.purpose || null,
+            note: props.editData.note || null,
+            status: props.editData.status || 0,
+            authUser: props.auth.user,
+            actionStatus: 0,
+        }
+        this.faceData()
     }
-    UNSAFE_componentWillReceiveProps(props) {
-        if (props.actionType === 'EDIT') {
-            this.setState({
-                id: props.editData.id,
-                type: props.editData.type,
-                start_date: new Date(props.editData.start_date),
-                end_date: new Date(props.editData.end_date),
-                total_day: props.editData.total_day,
-                purpose: props.editData.purpose,
-                note: props.editData.note,
-                status: 0,
-            })
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.leaveStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.leaveStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.leaveStatus
         }
     }
-    componentDidMount() {
-        Axios.get(`${API_URL}api/user/${authUser().id}`)
+    faceData = () => {
+        Axios.get(`${API_URL}api/user/${this.state.authUser.id}`)
             .then(res => {
                 this.setState({
                     userInfo: res.data
@@ -55,36 +52,23 @@ class EntryForm extends Component {
             [event.target.name]: event.target.value
         })
     }
-    startDateChangeHandler = start_date => this.setState({ start_date })
-    endDateChangeHandler = end_date => this.setState({ end_date })
+    startDateChangeHandler = date => {
+        this.setState({ start_date: dateFormat(date, "yyyy-mm-dd") })
+    }
+    endDateChangeHandler = date => {
+        this.setState({ end_date: dateFormat(date, "yyyy-mm-dd") })
+    }
     submitHandler = event => {
         event.preventDefault()
-        let data = {
-            ...this.state
-        }
-        let { start_date, end_date } = data
-        data.start_date = dateFormat(start_date, "yyyy-mm-dd")
-        data.end_date = dateFormat(end_date, "yyyy-mm-dd")
-
         if (this.props.actionType === 'ADD') {
-            this.props.storeData({ ...data })
+            this.props.storeData(this.state)
         } else if (this.props.actionType === 'EDIT') {
-            this.props.updateData({ ...data }, data.id)
+            this.props.updateData(this.state, this.state.id)
         }
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.updateActionStatus(1)
-                this.props.actionIsDone()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { type, start_date, end_date, total_day, purpose, note, userInfo, actionStatus } = this.state
-        let isDone = type && start_date && end_date && actionStatus !== 2
+        let isDone = type && start_date && end_date && actionStatus !== 1
 
         let casual_leave = 0;
         let sick_leave = 0;
@@ -105,7 +89,7 @@ class EntryForm extends Component {
 
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Leave Apply</Modal.Title>
                     </Modal.Header>
@@ -123,7 +107,7 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="type"
-                                    defaultValue={type}
+                                    value={type}
                                     onChange={this.changeHandler}
                                 >
                                     <option value="0">Select One</option>
@@ -147,7 +131,8 @@ class EntryForm extends Component {
                                 <Form.Label>From<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
-                                    selected={start_date}
+                                    selected={start_date ? new Date(start_date) : null}
+                                    minDate={new Date()}
                                     onChange={this.startDateChangeHandler}
                                     placeholder="From"
                                 />
@@ -156,7 +141,8 @@ class EntryForm extends Component {
                                 <Form.Label>To<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
-                                    selected={end_date}
+                                    minDate={start_date ? new Date(start_date) : new Date()}
+                                    selected={end_date ? new Date(end_date) : null}
                                     onChange={this.endDateChangeHandler}
                                     placeholder="To"
                                 />
@@ -184,7 +170,7 @@ class EntryForm extends Component {
                                     onChange={this.changeHandler}
                                 />
                             </Form.Group>
-                            <Button type="submit" block variant="dark" disabled={!isDone || (Number(total_day) > maxLeave)}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" block variant="dark" disabled={!isDone || (Number(total_day) > maxLeave)}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -192,4 +178,8 @@ class EntryForm extends Component {
         )
     }
 }
-export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)
+const mapStateToProps = state => ({
+    auth: state.auth,
+    common: state.common
+})
+export default connect(mapStateToProps, { storeData, updateData })(EntryForm)

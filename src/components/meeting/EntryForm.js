@@ -1,58 +1,41 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { storeData, updateData } from '../../store/actions/meetingActions';
-
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
-import { updateActionStatus } from '../../store/actions/commonActions';
-import authUser from '../../util/authUser';
-import TimePicker from 'react-time-picker';
-import Axios from 'axios';
 import { API_URL } from '../../store/actions/types';
+import Axios from 'axios';
+import { setEndTime } from '../../util/helper';
+import AudienceSection from './AudienceSection';
 
 class EntryForm extends Component {
-    state = {
-        id: "",
-        date: this.props.selectedDate,
-        start_time: "10:00:00",
-        end_time: "10:30:00",
-        status: 1,
-        note: "",
-        user_id: authUser().id,
-        actionStatus: actionStatus()
-    }
-    UNSAFE_componentWillReceiveProps(props) {
-        let addMinute = 30 * 60 * 1000;
-        let date1 = new Date(this.state.date + ' ' + props.selectedTime);
-        let date2 = new Date(date1.getTime() + addMinute);
-
-        let hour = date2.getHours();
-        let minute = date2.getMinutes();
-
-        if (minute.toString().length < 2) {
-            minute = '0' + minute
-        }
-        let end_time = hour + ':' + minute;
-        if (props.actionType === 'EDIT') {
-            // let start_time = props.editData.start_time
-            // if (props.editData.start_time.toString().length > 5) {
-            //     start_time = props.editData.start_time.slice(0, -3)
-            // }
-            this.setState({
-                id: props.editData.id,
-                date: props.selectedDate,
-                start_time: props.editData.start_time,
-                end_time: props.editData.end_time,
-                status: props.editData.status,
-                note: props.editData.note,
-            })
+    constructor(props) {
+        super(props);
+        let end_time = '';
+        if (props.editData.id) {
+            end_time = props.editData.end_time;
         } else {
-            this.setState({
-                date: props.selectedDate,
-                start_time: props.selectedTime,
-                end_time
-            })
+            end_time = setEndTime(props.selectedTime);
+        }
+        this.state = {
+            id: props.editData.id || null,
+            date: props.editData.date || props.selectedDate,
+            start_time: props.editData.start_time || props.selectedTime,
+            end_time: end_time,
+            status: props.editData.status || 1,
+            note: props.editData.note || null,
+            user_id: this.props.auth.user.id,
+            actionStatus: 0,
+            users: []
+        }
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.meetingRoomStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.meetingRoomStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.meetingRoomStatus
         }
     }
     changeHandler = event => {
@@ -60,24 +43,24 @@ class EntryForm extends Component {
             [event.target.name]: event.target.value
         })
     }
-    startTimeHandler = start_time => this.setState({ start_time })
-    endTimeHandler = end_time => this.setState({ end_time })
-
+    audienceHandler = event => {
+        if (event === null) {
+            this.setState({ users: [] })
+        } else {
+            let userId = event.map(item => {
+                return item.value
+            })
+            this.setState({ users: userId })
+        }
+    }
     submitHandler = event => {
         event.preventDefault()
-        let formData = this.state
-        if (formData.start_time.toString().length === 5) {
-            formData.start_time = formData.start_time + ':00'
-        }
-        if (formData.end_time.toString().length === 5) {
-            formData.end_time = formData.end_time + ':00'
-        }
-        Axios.post(`${API_URL}api/meeting-room-availability`, { ...formData })
+        Axios.post(`${API_URL}api/meeting-room-availability`, { ...this.state })
             .then(res => {
                 let selData = res.data
                 let isReady = true
                 if (Object.keys(selData).length !== 0) {
-                    let { start_time, end_time } = formData
+                    let { start_time, end_time } = this.state
                     selData.map(item => {
                         if ((start_time < item.start_time && end_time > item.start_time) || (end_time > item.start_time && end_time < item.end_time)) {
                             isReady = false
@@ -88,56 +71,110 @@ class EntryForm extends Component {
                     alert('This time meeting room has been booked, please try another time.')
                 } else {
                     if (this.props.actionType === 'ADD') {
-                        this.props.storeData(formData)
+                        this.props.storeData(this.state)
                     } else if (this.props.actionType === 'EDIT') {
-                        this.props.updateData(formData, formData.id)
+                        this.props.updateData(this.state, this.state.id)
                     }
                 }
             })
             .catch(err => console.log('err', err))
-        this.props.actionIsDone()
     }
     render() {
         let { id, date, start_time, end_time, status, note } = this.state
         let isDone = date && start_time && end_time && status && start_time < end_time
-        console.log('data', this.state)
+
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>{id ? 'Edit Meeting' : 'Add New Meeting'}+{id} Date: {date}</Modal.Title>
+                        <Modal.Title>{id ? 'Edit Meeting' : 'Add New Meeting'} Date: {date}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form onSubmit={this.submitHandler}>
                             <Form.Group>
                                 <Form.Label>Start Time<span>*</span></Form.Label>
-                                <TimePicker
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
-                                    value={start_time}
-                                    onChange={this.startTimeHandler}
-                                    required
-                                />
+                                    name="start_time"
+                                    defaultValue={start_time}
+                                    onChange={this.changeHandler}
+                                >
+                                    <option value="">Select One</option>
+                                    <option value="09:00:00">09:00 AM</option>
+                                    <option value="09:30:00">90:30 AM</option>
+                                    <option value="10:00:00">10:00 AM</option>
+                                    <option value="10:30:00">10:30 AM</option>
+                                    <option value="11:00:00">11:00 AM</option>
+                                    <option value="11:30:00">11:30 AM</option>
+                                    <option value="12:00:00">12:00 PM</option>
+                                    <option value="12:30:00">12:30 PM</option>
+                                    <option value="13:00:00">1:00 PM</option>
+                                    <option value="13:30:00">1:30 PM</option>
+                                    <option value="14:00:00">2:00 PM</option>
+                                    <option value="14:30:00">2:30 PM</option>
+                                    <option value="15:00:00">3:00 PM</option>
+                                    <option value="15:30:00">3:30 PM</option>
+                                    <option value="16:00:00">4:00 PM</option>
+                                    <option value="16:30:00">4:30 PM</option>
+                                    <option value="17:00:00">5:00 PM</option>
+                                    <option value="17:30:00">5:30 PM</option>
+                                    <option value="18:00:00">6:00 PM</option>
+                                    <option value="18:30:00">6:30 PM</option>
+                                    <option value="19:00:00">7:00 PM</option>
+                                </Form.Control>
                             </Form.Group>
+
                             <Form.Group>
                                 <Form.Label>End Time<span>*</span></Form.Label>
-                                <TimePicker
+                                <Form.Control
+                                    as="select"
                                     className="form-control"
-                                    value={end_time}
-                                    onChange={this.endTimeHandler}
-                                    required
-                                />
+                                    name="end_time"
+                                    defaultValue={end_time}
+                                    onChange={this.changeHandler}
+                                >
+                                    <option value="">Select One</option>
+                                    <option value="09:00:00">09:00 AM</option>
+                                    <option value="09:30:00">90:30 AM</option>
+                                    <option value="10:00:00">10:00 AM</option>
+                                    <option value="10:30:00">10:30 AM</option>
+                                    <option value="11:00:00">11:00 AM</option>
+                                    <option value="11:30:00">11:30 AM</option>
+                                    <option value="12:00:00">12:00 PM</option>
+                                    <option value="12:30:00">12:30 PM</option>
+                                    <option value="13:00:00">1:00 PM</option>
+                                    <option value="13:30:00">1:30 PM</option>
+                                    <option value="14:00:00">2:00 PM</option>
+                                    <option value="14:30:00">2:30 PM</option>
+                                    <option value="15:00:00">3:00 PM</option>
+                                    <option value="15:30:00">3:30 PM</option>
+                                    <option value="16:00:00">4:00 PM</option>
+                                    <option value="16:30:00">4:30 PM</option>
+                                    <option value="17:00:00">5:00 PM</option>
+                                    <option value="17:30:00">5:30 PM</option>
+                                    <option value="18:00:00">6:00 PM</option>
+                                    <option value="18:30:00">6:30 PM</option>
+                                    <option value="19:00:00">7:00 PM</option>
+                                </Form.Control>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>Take Note</Form.Label>
+                                <Form.Label>Meeting Agenda</Form.Label>
                                 <Form.Control
                                     type="text"
                                     className="form-control"
                                     name="note"
                                     defaultValue={note}
                                     onChange={this.changeHandler}
-                                    placeholder="Take a Short Note"
+                                    placeholder="Meeting Agenda"
                                 />
                             </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Audience Status</Form.Label>
+                                <AudienceSection audienceHandler={this.audienceHandler} meetingId={id} />
+                            </Form.Group>
+
                             <Form.Group>
                                 <Form.Label>Status<span>*</span></Form.Label>
                                 <Form.Control
@@ -152,6 +189,7 @@ class EntryForm extends Component {
                                     <option value="3">Done</option>
                                 </Form.Control>
                             </Form.Group>
+
                             <Button type="submit" variant="dark" block disabled={!isDone}>Submit</Button>
                         </Form>
                     </Modal.Body>
@@ -160,4 +198,8 @@ class EntryForm extends Component {
         )
     }
 }
-export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)
+const mapStateToProps = state => ({
+    auth: state.auth,
+    common: state.common,
+})
+export default connect(mapStateToProps, { storeData, updateData })(EntryForm)

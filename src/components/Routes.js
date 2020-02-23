@@ -1,7 +1,6 @@
 import React from 'react'
 import './App.css'
 import { Route, Switch } from 'react-router-dom';
-import { BASE_URL } from '../store/actions/types';
 
 import Sidebar from './layout/Sidebar';
 import Header from './layout/Header';
@@ -14,6 +13,7 @@ import MyProfile from './profile/MyProfile';
 import EmployeeList from './profile/EmployeeList';
 import EmployeeProfile from './profile/EmployeeProfile';
 import Meeting from './meeting/Meeting';
+import MeetingDetail from './meeting/MeetingDetail';
 
 class Routes extends React.Component {
     render() {
@@ -27,6 +27,7 @@ class Routes extends React.Component {
                     <div id="right-panel" className="right-panel">
                         <Switch>
                             <Route path='/meeting' component={Meeting} history={this.props.history} />
+                            <Route path='/meeting-detail/:id' component={MeetingDetail} history={this.props.history} />
                             <Route path='/profile/:id' component={EmployeeProfile} history={this.props.history} />
                             <Route path='/my-profile' component={MyProfile} history={this.props.history} />
                             <Route path='/leave' component={Leave} history={this.props.history} />

@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import Axios from 'axios'
-import { API_URL, BASE_URL } from '../../store/actions/types'
+import { API_URL } from '../../store/actions/types'
 import Loading from '../layout/Loading';
 import { textLimit } from '../../util/helper';
 import { Link } from 'react-router-dom';
@@ -38,8 +38,8 @@ class EmployeeList extends Component {
                                         <div className="card">
                                             <div className="card-body profile-card-body">
                                                 <div className="mx-auto d-block">
-                                                    <img className="rounded-circle mx-auto d-block employee-image" src={item.image ? `${API_URL + item.image}` : `${BASE_URL}images/admin.jpg`} alt="CardImageCap" />
-                                                    <h4 className="text-sm-center mt-2 mb-1 employee-name"><Link to={`${BASE_URL}/profile/${item.id}`}>{item.name}</Link></h4>
+                                                    <img className="rounded-circle mx-auto d-block employee-image" src={item.image ? `${API_URL + item.image}` : `/images/admin.jpg`} alt="CardImageCap" />
+                                                    <h4 className="text-sm-center mt-2 mb-1 employee-name"><Link to={`/profile/${item.id}`}>{item.name}</Link></h4>
                                                     <h5 className="text-sm-center mt-2 mb-1">{item.designation}</h5>
                                                     <div className="location text-sm-center"><i className="fa fa-map-marker"></i> {item.address}</div>
                                                     <p className="location text-sm-center">{textLimit(item.bio)}</p>

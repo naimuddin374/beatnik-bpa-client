@@ -3,14 +3,25 @@ import { connect } from 'react-redux'
 import { updatePassword } from '../../store/actions/profileActions'
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
 
 class ChangePassword extends Component {
-    state = {
-        currentPassword: '',
-        password: '',
-        confirmPassword: '',
-        actionStatus: actionStatus()
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentPassword: '',
+            password: '',
+            confirmPassword: '',
+            actionStatus: 0
+        }
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.passUpdateStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.passUpdateStatus === 2) {
+            nextProps.isClose()
+        }
+        return {
+            actionStatus: nextProps.common.passUpdateStatus
+        }
     }
     changeHandler = event => {
         this.setState({
@@ -20,22 +31,13 @@ class ChangePassword extends Component {
     submitHandler = event => {
         event.preventDefault()
         this.props.updatePassword(this.state, this.props.user.id)
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.isClose()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { currentPassword, password, confirmPassword, actionStatus } = this.state
-        let isDone = currentPassword && password && confirmPassword && (password === confirmPassword) && actionStatus !== 2
+        let isDone = currentPassword && password && confirmPassword && (password === confirmPassword) && actionStatus !== 1
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Change Your Password</Modal.Title>
                     </Modal.Header>
@@ -74,7 +76,7 @@ class ChangePassword extends Component {
                                     onChange={this.changeHandler}
                                 />
                             </Form.Group>
-                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -82,4 +84,7 @@ class ChangePassword extends Component {
         )
     }
 }
-export default connect(null, { updatePassword })(ChangePassword)
+const mapStateToProps = state => ({
+    common: state.common
+})
+export default connect(mapStateToProps, { updatePassword })(ChangePassword)

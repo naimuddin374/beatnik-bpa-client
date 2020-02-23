@@ -1,15 +1,23 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { BASE_URL } from '../../store/actions/types'
-import authUser from '../../util/authUser'
+import { connect } from 'react-redux'
 
 class Sidebar extends Component {
     state = {
-        pathName: window.location.pathname
+        pathName: window.location.pathname,
+        user: this.props.auth.user
     }
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //     if (JSON.stringify(nextProps.auth.user) === JSON.stringify(prevState.auth)) return null
+    //     if (Object.keys(nextProps.auth.user).length === 0) {
+    //         nextProps.history.push('/')
+    //     }
+    //     return {
+    //         auth: nextProps.auth.user,
+    //     }
+    // }
     render() {
-        let { role } = authUser()
-        let { pathname } = this.state
+        let { pathname, user } = this.state
         return (
             <Fragment>
                 <aside id="left-panel" className="left-panel bg-dark">
@@ -28,11 +36,11 @@ class Sidebar extends Component {
                                 <li className={pathname === "employee" ? "active" : ''}>
                                     <Link to='/employee'><i className="menu-icon fa fa-users" />Employee Profile</Link>
                                 </li>
-                                {role === 2 &&
+                                {user.role === 2 &&
                                     <li className={pathname === "user" ? "active" : ''}>
                                         <Link to='/user'><i className="menu-icon fa fa-users" />Employee </Link>
                                     </li>}
-                                {role === 2 &&
+                                {user.role === 2 &&
                                     <li className={pathname === "department" ? "active" : ''}>
                                         <Link to='/department'><i className="menu-icon fa fa-laptop" />Department </Link>
                                     </li>}
@@ -44,4 +52,8 @@ class Sidebar extends Component {
         )
     }
 }
-export default Sidebar
+
+const mapStateToProps = state => ({
+    auth: state.auth,
+})
+export default connect(mapStateToProps)(Sidebar)

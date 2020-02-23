@@ -7,7 +7,6 @@ class Leave extends Component {
         leaves: []
     }
     componentDidMount() {
-        console.log(this.props.userId)
         Axios.get(`${API_URL}api/leave/${this.props.userId}`)
             .then(res => {
                 this.setState({

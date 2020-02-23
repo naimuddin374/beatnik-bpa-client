@@ -8,40 +8,36 @@ import { BASE_URL } from '../../store/actions/types';
 
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
 import { updateActionStatus } from '../../store/actions/commonActions';
 
 class EditProfile extends Component {
-    state = {
-        id: '',
-        name: '',
-        contact: '',
-        personal_email: '',
-        blood_group: '',
-        address: '',
-        bio: '',
-        facebook: '',
-        linkedin: '',
-        twitter: '',
-        imgPath: '',
-        date_of_birth: new Date(),
-        actionStatus: actionStatus()
-    }
-    UNSAFE_componentWillReceiveProps(props) {
-        this.setState({
-            id: props.user.id,
-            name: props.user.name,
-            contact: props.user.contact,
-            personal_email: props.user.personal_email,
-            blood_group: props.user.blood_group,
-            address: props.user.address,
-            bio: props.user.bio,
-            facebook: props.user.facebook,
-            linkedin: props.user.linkedin,
-            twitter: props.user.twitter,
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            id: props.user.id || '',
+            name: props.user.name || '',
+            contact: props.user.contact || '',
+            personal_email: props.user.personal_email || '',
+            blood_group: props.user.blood_group || '',
+            address: props.user.address || '',
+            bio: props.user.bio || '',
+            facebook: props.user.facebook || '',
+            linkedin: props.user.linkedin || '',
+            twitter: props.user.twitter || '',
             imgPath: props.user.image ? BASE_URL + props.user.image : '',
             date_of_birth: props.user.date_of_birth ? new Date(props.user.date_of_birth) : new Date(),
-        })
+            actionStatus: 0
+        }
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.profileEditStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.profileEditStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.profileEditStatus
+        }
     }
     changeHandler = event => {
         this.setState({
@@ -68,30 +64,19 @@ class EditProfile extends Component {
         let { date_of_birth } = data
         data.date_of_birth = dateFormat(date_of_birth, "yyyy-mm-dd")
         this.props.updateProfileInfo({ ...data }, data.id)
-
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.updateActionStatus(1)
-                this.props.actionIsDone()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { name, contact, personal_email, date_of_birth, blood_group, address, imgPath, bio, facebook, linkedin, twitter, actionStatus } = this.state
-        let isDone = name && contact && actionStatus !== 2
+        let isDone = name && contact && actionStatus !== 1
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Edit Information</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form onSubmit={this.submitHandler}>
-                            <Form.Group>
+                            <Form.Group className="text-center">
                                 <Form.Label>
                                     {imgPath && <img className="align-self-center rounded-circle mr-3" width="100" height="100" alt="ProfilePicture" src={imgPath} />}
                                 </Form.Label>
@@ -113,7 +98,7 @@ class EditProfile extends Component {
                                 />
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>Email Address</Form.Label>
+                                <Form.Label>Personal Email </Form.Label>
                                 <Form.Control
                                     type="email"
                                     className="form-control"
@@ -178,7 +163,8 @@ class EditProfile extends Component {
                             <Form.Group>
                                 <Form.Label>Biography</Form.Label>
                                 <Form.Control
-                                    type="text"
+                                    as="textarea"
+                                    rows="4"
                                     className="form-control"
                                     name="bio"
                                     defaultValue={bio}
@@ -219,7 +205,7 @@ class EditProfile extends Component {
                                     placeholder="Enter twitter Profile Link"
                                 />
                             </Form.Group>
-                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -227,4 +213,7 @@ class EditProfile extends Component {
         )
     }
 }
-export default connect(null, { updateProfileInfo, updateActionStatus })(EditProfile)
+const mapStateToProps = state => ({
+    common: state.common
+})
+export default connect(mapStateToProps, { updateProfileInfo, updateActionStatus })(EditProfile)

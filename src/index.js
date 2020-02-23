@@ -8,11 +8,11 @@ import { SET_USER } from './store/actions/types';
 import { BrowserRouter } from 'react-router-dom';
 import History from './util/History'
 
-let auth = localStorage.getItem('auth')
-if (auth) {
+let authUser = localStorage.getItem('auth_user')
+if (authUser) {
     store.dispatch({
         type: SET_USER,
-        payload: JSON.parse(auth)
+        payload: JSON.parse(authUser)
     })
 }
 

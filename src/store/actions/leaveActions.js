@@ -1,11 +1,11 @@
-import { SET_MESSAGE, API_URL, ACTION_STATUS } from './types'
+import { SET_MESSAGE, API_URL, LEAVE_MAN_STATUS } from './types'
 import Axios from 'axios'
 
 // Data Store
 export const storeData = data => dispatch => {
     dispatch({
-        type: ACTION_STATUS,
-        payload: 2
+        type: LEAVE_MAN_STATUS,
+        payload: 1
     })
     Axios.post(`${API_URL}api/leave`, data)
         .then(res => {
@@ -15,8 +15,22 @@ export const storeData = data => dispatch => {
                     message: res.data.message,
                 }
             })
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 2
+            })
+            setTimeout(() => {
+                dispatch({
+                    type: LEAVE_MAN_STATUS,
+                    payload: 0
+                })
+            }, 1000)
         })
         .catch(err => {
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 3
+            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -31,8 +45,8 @@ export const storeData = data => dispatch => {
 // Data Update
 export const updateData = (data, id) => dispatch => {
     dispatch({
-        type: ACTION_STATUS,
-        payload: 2
+        type: LEAVE_MAN_STATUS,
+        payload: 1
     })
     Axios.put(`${API_URL}api/leave/${id}`, data)
         .then(res => {
@@ -42,8 +56,22 @@ export const updateData = (data, id) => dispatch => {
                     message: res.data.message,
                 }
             })
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 2
+            })
+            setTimeout(() => {
+                dispatch({
+                    type: LEAVE_MAN_STATUS,
+                    payload: 0
+                })
+            }, 1000)
         })
         .catch(err => {
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 3
+            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -79,8 +107,8 @@ export const deleteData = id => dispatch => {
 // Leave Approved
 export const leaveApprove = id => dispatch => {
     dispatch({
-        type: ACTION_STATUS,
-        payload: 2
+        type: LEAVE_MAN_STATUS,
+        payload: 1
     })
     Axios.get(`${API_URL}api/leave-approve/${id}`)
         .then(res => {
@@ -90,8 +118,22 @@ export const leaveApprove = id => dispatch => {
                     message: res.data.message,
                 }
             })
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 2
+            })
+            setTimeout(() => {
+                dispatch({
+                    type: LEAVE_MAN_STATUS,
+                    payload: 0
+                })
+            }, 1000)
         })
         .catch(err => {
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 3
+            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -105,8 +147,8 @@ export const leaveApprove = id => dispatch => {
 // Leave Reject
 export const leaveReject = (data, id) => dispatch => {
     dispatch({
-        type: ACTION_STATUS,
-        payload: 2
+        type: LEAVE_MAN_STATUS,
+        payload: 1
     })
     Axios.put(`${API_URL}api/leave-reject/${id}`, data)
         .then(res => {
@@ -116,8 +158,22 @@ export const leaveReject = (data, id) => dispatch => {
                     message: res.data.message,
                 }
             })
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 2
+            })
+            setTimeout(() => {
+                dispatch({
+                    type: LEAVE_MAN_STATUS,
+                    payload: 0
+                })
+            }, 1000)
         })
         .catch(err => {
+            dispatch({
+                type: LEAVE_MAN_STATUS,
+                payload: 3
+            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {

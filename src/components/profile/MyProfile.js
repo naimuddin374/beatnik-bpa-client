@@ -2,14 +2,15 @@ import React, { Component, Fragment } from 'react';
 import EditProfile from './EditProfile';
 import { BASE_URL, API_URL } from '../../store/actions/types';
 import ProfileInfo from './ProfileInfo';
-import authUser from '../../util/authUser';
 import Axios from 'axios';
 import Leave from './Leave';
+import { connect } from 'react-redux';
 
 class MyProfile extends Component {
     state = {
         isModalOpen: false,
-        user: []
+        user: [],
+        authUser: this.props.auth.user
     }
     componentDidMount() {
         this.dataFetch()
@@ -26,7 +27,7 @@ class MyProfile extends Component {
         }, 1000)
     }
     dataFetch = () => {
-        Axios.get(`${API_URL}api/user-info/${authUser().id}`)
+        Axios.get(`${API_URL}api/user-info/${this.state.authUser.id}`)
             .then(res => {
                 this.setState({
                     user: res.data[0]
@@ -35,7 +36,7 @@ class MyProfile extends Component {
             .catch(error => console.log(error.response))
     }
     render() {
-        let { isModalOpen, user } = this.state
+        let { isModalOpen, user, authUser } = this.state
         return (
             <Fragment>
                 <div className="content">
@@ -64,12 +65,13 @@ class MyProfile extends Component {
                                                         <i className="fa ti-pencil-alt" /> Edit Profile
                                                     </button>
 
-                                                    <EditProfile
-                                                        isOpen={isModalOpen}
-                                                        isClose={this.closeModal}
-                                                        actionIsDone={this.actionIsDone}
-                                                        user={user}
-                                                    />
+                                                    {isModalOpen &&
+                                                        <EditProfile
+                                                            isOpen={isModalOpen}
+                                                            isClose={this.closeModal}
+                                                            actionIsDone={this.actionIsDone}
+                                                            user={user}
+                                                        />}
                                                 </div>
                                             </section>
                                         </div>
@@ -77,6 +79,7 @@ class MyProfile extends Component {
                                 </div>
                                 <ProfileInfo
                                     user={user}
+                                    authUser={authUser}
                                 />
                             </div>
 
@@ -90,4 +93,7 @@ class MyProfile extends Component {
         )
     }
 }
-export default MyProfile
+const mapStateToProps = state => ({
+    auth: state.auth,
+})
+export default connect(mapStateToProps)(MyProfile)

@@ -8,19 +8,22 @@ import { actionStatus } from '../../util/helper';
 import { updateActionStatus } from './../../store/actions/commonActions';
 
 class RejectNote extends Component {
-    state = {
-        id: "",
-        note: "",
-        status: 2,
-        actionStatus: actionStatus()
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: props.editData.id || null,
+            note: props.editData.note || null,
+            status: 2,
+            actionStatus: 0,
+        }
     }
-    UNSAFE_componentWillReceiveProps(props) {
-        if (props.actionType === 'EDIT') {
-            this.setState({
-                id: props.editData.id,
-                note: props.editData.note,
-                status: 2,
-            })
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.leaveStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.leaveStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.leaveStatus
         }
     }
     changeHandler = event => {
@@ -31,20 +34,10 @@ class RejectNote extends Component {
     submitHandler = event => {
         event.preventDefault()
         this.props.leaveReject({ ...this.state }, this.state.id)
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.updateActionStatus(1)
-                this.props.actionIsDone()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { note } = this.state
-        let isDone = note && actionStatus !== 2
+        let isDone = note && actionStatus !== 1
         return (
             <Fragment>
                 <Modal show={this.props.isOpen} onHide={this.props.isClose}>
@@ -65,7 +58,7 @@ class RejectNote extends Component {
                                     onChange={this.changeHandler}
                                 />
                             </Form.Group>
-                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -73,4 +66,7 @@ class RejectNote extends Component {
         )
     }
 }
-export default connect(null, { leaveReject, updateActionStatus })(RejectNote)
+const mapStateToProps = state => ({
+    common: state.common
+})
+export default connect(mapStateToProps, { leaveReject, updateActionStatus })(RejectNote)

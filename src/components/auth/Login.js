@@ -4,13 +4,21 @@ import { login } from '../../store/actions/authActions'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import logo from '../assets/images/logo.png';
-import { actionStatus } from '../../util/helper';
 
 class Login extends React.Component {
     state = {
         email: "",
         password: "",
-        actionStatus: actionStatus()
+        actionStatus: 0
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.auth.status) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.auth.status === 2) {
+            nextProps.history.push('/')
+        }
+        return {
+            actionStatus: nextProps.auth.status,
+        }
     }
     changeHandler = event => {
         this.setState({
@@ -20,19 +28,10 @@ class Login extends React.Component {
     submitHandler = event => {
         event.preventDefault()
         this.props.login(this.state)
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.history.push('/');
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { email, password, actionStatus } = this.state
-        let isDone = email && password && actionStatus !== 2
+        let isDone = email && password && actionStatus !== 1
         return (
             <React.Fragment>
                 <div className="container-fluid bg-dark vh-100 section-padding overflow-hidden">
@@ -71,7 +70,7 @@ class Login extends React.Component {
                                                 onChange={this.changeHandler}
                                             />
                                         </Form.Group>
-                                        <Button type="submit" variant="light" disabled={!isDone} block>{actionStatus === 2 ? `Please Wait...` : `Sign In`}</Button>
+                                        <Button type="submit" variant="light" disabled={!isDone} block>{actionStatus === 1 ? `Please Wait...` : `Sign In`}</Button>
                                     </Form>
                                 </div>
                             </div>
@@ -82,4 +81,7 @@ class Login extends React.Component {
         )
     }
 }
-export default connect(null, { login })(Login)
+const mapStateToProps = state => ({
+    auth: state.auth
+})
+export default connect(mapStateToProps, { login })(Login)

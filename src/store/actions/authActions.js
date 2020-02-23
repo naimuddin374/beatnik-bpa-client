@@ -1,16 +1,16 @@
-import { SET_MESSAGE, API_URL, SET_USER, BASE_URL, ACTION_STATUS } from './types'
+import { SET_MESSAGE, API_URL, SET_USER, LOGIN_ACTION_STATUS } from './types'
 import Axios from 'axios'
 
 // Login
 export const login = data => dispatch => {
     dispatch({
-        type: ACTION_STATUS,
-        payload: 2
+        type: LOGIN_ACTION_STATUS,
+        payload: 1
     })
     Axios.post(`${API_URL}api/login`, data)
         .then(res => {
             let user = res.data.user
-            localStorage.setItem('auth', JSON.stringify(user))
+            localStorage.setItem('auth_user', JSON.stringify(user))
             dispatch({
                 type: SET_USER,
                 payload: user
@@ -22,8 +22,19 @@ export const login = data => dispatch => {
                     type: 'success',
                 }
             })
+
+            setTimeout(() => {
+                dispatch({
+                    type: LOGIN_ACTION_STATUS,
+                    payload: 0
+                })
+            }, 1000)
         })
         .catch(err => {
+            dispatch({
+                type: LOGIN_ACTION_STATUS,
+                payload: 3
+            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
@@ -37,8 +48,8 @@ export const login = data => dispatch => {
 
 // Logout
 export const logout = history => dispatch => {
-    localStorage.removeItem('auth')
-    history.push(`${BASE_URL}/`)
+    localStorage.removeItem('auth_user')
+    history.push(`/`)
     window.location.reload();
     dispatch({
         type: SET_USER,

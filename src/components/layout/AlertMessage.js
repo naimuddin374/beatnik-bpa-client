@@ -3,8 +3,29 @@ import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
 
 class AlertMessage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            type: '',
+            message: '',
+            time: 0
+        }
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.time) === JSON.stringify(prevState.time)) return null
+        if (nextProps.common.time === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            type: nextProps.common.type,
+            message: nextProps.common.message,
+            time: nextProps.common.time,
+        }
+    }
+
     render() {
-        if (this.props.common.message) {
+        let { type, message } = this.state
+        if (message) {
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -17,8 +38,8 @@ class AlertMessage extends React.Component {
                 }
             })
             Toast.fire({
-                icon: this.props.common.type,
-                title: this.props.common.message
+                icon: type,
+                title: message
             })
         }
         return <div></div>

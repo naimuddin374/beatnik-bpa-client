@@ -9,61 +9,45 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
-import { updateActionStatus } from './../../store/actions/commonActions';
 
 
 class EntryForm extends Component {
-    state = {
-        departments: [],
-        users: [],
-        id: null,
-        employee_id: null,
-        department_id: 0,
-        supervisor_id: 0,
-        role: 1,
-        type: 1,
-        casual_leave: 10,
-        sick_leave: 10,
-        name: null,
-        designation: null,
-        email: null,
-        password: null,
-        joining_date: new Date(),
-        end_date: new Date(),
-        isContinue: 0,
-        salary: 0,
-        probationPeriod: 0,
-        probation_period: new Date(),
-        status: 1,
-        actionStatus: actionStatus()
-    }
-    UNSAFE_componentWillReceiveProps(props) {
-        // Modal.setAppElement('body');
-        if (props.actionType === 'EDIT') {
-            this.setState({
-                id: props.editData.id,
-                employee_id: props.editData.employee_id,
-                department_id: props.editData.department_id,
-                supervisor_id: props.editData.supervisor_id,
-                role: props.editData.role,
-                type: props.editData.type,
-                casual_leave: props.editData.casual_leave,
-                sick_leave: props.editData.sick_leave,
-                name: props.editData.name,
-                designation: props.editData.designation,
-                email: props.editData.email,
-                password: null,
-                joining_date: new Date(props.editData.joining_date),
-                end_date: new Date(props.editData.end_date),
-                isContinue: props.editData.status === 1 ? 1 : 0,
-                salary: props.editData.salary,
-                probation_period: props.editData.probation_period,
-                status: props.editData.status,
-                probationPeriod: props.editData.probation_period ? 1 : 0,
-            })
+    constructor(props) {
+        super(props);
+        this.state = {
+            departments: [],
+            users: [],
+            id: props.editData.id || null,
+            employee_id: props.editData.employee_id || null,
+            department_id: props.editData.department_id || 0,
+            supervisor_id: props.editData.supervisor_id || 0,
+            role: props.editData.role || 1,
+            type: props.editData.type || 1,
+            casual_leave: props.editData.casual_leave || 10,
+            sick_leave: props.editData.sick_leave || 10,
+            name: props.editData.name || null,
+            designation: props.editData.designation || null,
+            email: props.editData.email || null,
+            password: null,
+            joining_date: props.editData.joining_date || null,
+            end_date: props.editData.end_date || null,
+            salary: props.editData.salary || 0,
+            probation_period: props.editData.probation_period || null,
+            probationPeriod: props.editData.probation_period ? 1 : 0,
+            status: props.editData.status || 1,
+            isContinue: props.editData.status === 1 ? true : false,
+            actionStatus: 0
         }
         this.faceDepartment()
+    }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.employeeStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.employeeStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.employeeStatus
+        }
     }
     faceDepartment = () => {
         Axios.get(`${API_URL}api/department`)
@@ -84,40 +68,33 @@ class EntryForm extends Component {
             [event.target.name]: event.target.value
         })
     }
-    joiningDateHandler = joining_date => this.setState({ joining_date })
-    endingDateHandler = end_date => this.setState({ end_date })
-    probationPeriodDateHandler = probation_period => this.setState({ probation_period })
+    joiningDateHandler = date => {
+        this.setState({
+            joining_date: dateFormat(date, "yyyy-mm-dd")
+        })
+    }
+    endingDateHandler = date => {
+        this.setState({ end_date: dateFormat(date, "yyyy-mm-dd") })
+    }
+    probationPeriodDateHandler = date => {
+        this.setState({
+            probation_period: dateFormat(date, "yyyy-mm-dd")
+        })
+    }
     submitHandler = event => {
         event.preventDefault()
-        let data = {
-            ...this.state
-        }
-        let { joining_date, end_date } = data
-        data.joining_date = dateFormat(joining_date, "yyyy-mm-dd")
-        data.end_date = dateFormat(end_date, "yyyy-mm-dd")
-
         if (this.props.actionType === 'ADD') {
-            this.props.storeData({ ...data })
+            this.props.storeData(this.state)
         } else if (this.props.actionType === 'EDIT') {
-            this.props.updateData({ ...data }, data.id)
+            this.props.updateData(this.state, this.state.id)
         }
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.updateActionStatus(1)
-                this.props.actionIsDone()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { departments, users, employee_id, department_id, supervisor_id, role, type, casual_leave, sick_leave, name, designation, email, password, joining_date, end_date, salary, status, id, isContinue, probation_period, probationPeriod, actionStatus } = this.state
-        let isDone = name && role && type && designation && status && actionStatus !== 2
+        let isDone = name && role && type && designation && status && actionStatus !== 1
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>{id ? 'Edit Employee' : 'Add New Employee'}</Modal.Title>
                     </Modal.Header>
@@ -129,8 +106,8 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="department_id"
-                                    defaultValue={department_id}
                                     onChange={this.changeHandler}
+                                    value={department_id}
                                 >
                                     <option value="">Select One</option>
                                     {Object.keys(departments).length !== 0 &&
@@ -146,7 +123,7 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="supervisor_id"
-                                    defaultValue={supervisor_id}
+                                    value={supervisor_id}
                                     onChange={this.changeHandler}
                                 >
                                     <option value="">Select One</option>
@@ -163,7 +140,7 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="role"
-                                    defaultValue={role}
+                                    value={role}
                                     onChange={this.changeHandler}
                                 >
                                     <option value="">Select One</option>
@@ -180,7 +157,7 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="type"
-                                    defaultValue={type}
+                                    value={type}
                                     onChange={this.changeHandler}
                                 >
                                     <option value="">Select One</option>
@@ -282,20 +259,21 @@ class EntryForm extends Component {
                                 <Form.Label>Joining Date<span>*</span></Form.Label>
                                 <DatePicker
                                     className="form-control"
-                                    selected={joining_date}
+                                    selected={joining_date ? new Date(joining_date) : new Date()}
                                     onChange={this.joiningDateHandler}
                                     placeholder="Enter Joining Date"
                                 />
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>End Date<span>*</span></Form.Label>
+                                <Form.Label>End Date<span>*</span> </Form.Label>
                                 <Form.Label><input type="checkbox" checked={isContinue} onChange={() => this.setState({ isContinue: !isContinue })} /> Continue</Form.Label>
-                                <DatePicker
-                                    className="form-control"
-                                    selected={end_date}
-                                    onChange={this.endingDateHandler}
-                                    placeholder="Enter End Date"
-                                />
+                                {!isContinue &&
+                                    <DatePicker
+                                        className="form-control"
+                                        selected={end_date ? new Date(end_date) : new Date()}
+                                        onChange={this.endingDateHandler}
+                                        placeholder="Enter End Date"
+                                    />}
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Status<span>*</span></Form.Label>
@@ -303,7 +281,7 @@ class EntryForm extends Component {
                                     as="select"
                                     className="form-control"
                                     name="status"
-                                    defaultValue={status}
+                                    value={status}
                                     onChange={this.changeHandler}
                                 >
                                     <option value="">Select One</option>
@@ -313,16 +291,16 @@ class EntryForm extends Component {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>If have probation period?</Form.Label><br />
-                                <Form.Label><input type="checkbox" checked={probationPeriod} onChange={() => this.setState({ probationPeriod: !probationPeriod })} /> No</Form.Label>
-                                {!probationPeriod &&
+                                <Form.Label><input type="checkbox" checked={probationPeriod} onChange={() => this.setState({ probationPeriod: !probationPeriod })} /> Yes</Form.Label>
+                                {probationPeriod === true &&
                                     <DatePicker
                                         className="form-control"
-                                        selected={probation_period}
+                                        selected={probation_period ? new Date(probation_period) : new Date()}
                                         onChange={this.probationPeriodDateHandler}
                                     />}
                             </Form.Group>
 
-                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" block variant="dark" disabled={!isDone}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -330,4 +308,7 @@ class EntryForm extends Component {
         )
     }
 }
-export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)
+const mapStateToProps = state => ({
+    common: state.common
+})
+export default connect(mapStateToProps, { storeData, updateData })(EntryForm)

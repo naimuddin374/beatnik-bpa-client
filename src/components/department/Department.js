@@ -95,20 +95,18 @@ class Department extends Component {
                                             noDataText='No rows found!'
                                             loading={loading}
                                         />
-                                        <EntryForm
-                                            isOpen={isModalOpen}
-                                            isClose={this.closeModal}
-                                            actionIsDone={this.actionIsDone}
-                                            actionType={actionType}
-                                            editData={editData}
-                                        />
-
+                                        
+                                        {isModalOpen &&
+                                            <EntryForm
+                                                isOpen={isModalOpen}
+                                                isClose={this.closeModal}
+                                                actionIsDone={this.actionIsDone}
+                                                actionType={actionType}
+                                                editData={editData}
+                                            />}
                                     </div>
-
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>

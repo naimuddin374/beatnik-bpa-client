@@ -3,11 +3,12 @@ import { BASE_URL, API_URL } from '../../store/actions/types';
 import Axios from 'axios';
 import ProfileInfo from './ProfileInfo';
 import Leave from './Leave';
-import authUser from './../../util/authUser';
+import { connect } from 'react-redux';
 
 class EmployeeProfile extends Component {
     state = {
-        user: []
+        user: [],
+        authUser: this.props.auth.user
     }
     componentDidMount() {
         Axios.get(`${API_URL}api/user-info/${this.props.match.params.id}`)
@@ -19,12 +20,11 @@ class EmployeeProfile extends Component {
             .catch(error => console.log(error.response))
     }
     render() {
-        let { user } = this.state
+        let { user, authUser } = this.state
         return (
             <Fragment>
                 <div className="content">
                     {Object.keys(user).length !== 0 &&
-
                         <section>
                             <div className="animated fadeIn">
                                 <div className="row">
@@ -36,9 +36,9 @@ class EmployeeProfile extends Component {
                                                     <h2>{user.name}</h2>
                                                     <h4>{user.designation}</h4>
                                                     <div className="card-text text-sm-center">
-                                                        <a href={`${user.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>
-                                                        <a href={`${user.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>
-                                                        <a href={`${user.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>
+                                                        {user.facebook && <a href={`${user.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>}
+                                                        {user.linkedin && <a href={`${user.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>}
+                                                        {user.twitter && <a href={`${user.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>}
                                                     </div>
                                                     <p className="boi-padding">{user.bio}</p>
                                                 </div>
@@ -48,11 +48,11 @@ class EmployeeProfile extends Component {
                                 </div>
                                 <ProfileInfo
                                     user={user}
-                                    auth={this.props.auth}
+                                    authUser={authUser}
                                 />
                             </div>
 
-                            {(authUser().role === 2 || (authUser().role === 3 && authUser().id === user.supervisor_id)) &&
+                            {(authUser.role === 2 || (authUser.id === user.id) || (authUser.role === 3 && authUser.id === user.supervisor_id)) &&
                                 <Leave
                                     userId={user.id}
                                 />
@@ -64,4 +64,7 @@ class EmployeeProfile extends Component {
         )
     }
 }
-export default EmployeeProfile
+const mapStateToProps = state => ({
+    auth: state.auth,
+})
+export default connect(mapStateToProps)(EmployeeProfile)

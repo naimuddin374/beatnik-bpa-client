@@ -4,22 +4,25 @@ import { storeData, updateData } from '../../store/actions/departmentActions'
 
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { actionStatus } from '../../util/helper';
 import { updateActionStatus } from '../../store/actions/commonActions';
 
 
 class EntryForm extends Component {
-    state = {
-        id: "",
-        name: "",
-        actionStatus: actionStatus()
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: props.editData.id || '',
+            name: props.editData.name || '',
+            actionStatus: 0
+        }
     }
-    UNSAFE_componentWillReceiveProps(props) {
-        if (props.actionType === 'EDIT') {
-            this.setState({
-                id: props.editData.id,
-                name: props.editData.name,
-            })
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (JSON.stringify(nextProps.common.departmentStatus) === JSON.stringify(prevState.actionStatus)) return null
+        if (nextProps.common.departmentStatus === 2) {
+            nextProps.actionIsDone()
+        }
+        return {
+            actionStatus: nextProps.common.departmentStatus
         }
     }
     changeHandler = event => {
@@ -30,27 +33,17 @@ class EntryForm extends Component {
     submitHandler = event => {
         event.preventDefault()
         if (this.props.actionType === 'ADD') {
-            this.props.storeData({ ...this.state })
+            this.props.storeData(this.state)
         } else if (this.props.actionType === 'EDIT') {
-            this.props.updateData({ ...this.state }, this.state.id)
+            this.props.updateData(this.state, this.state.id)
         }
-        setInterval(() => {
-            if (actionStatus() === 4) {
-                this.props.updateActionStatus(1)
-                this.props.actionIsDone()
-            } else {
-                this.setState({
-                    actionStatus: actionStatus()
-                })
-            }
-        }, 500)
     }
     render() {
         let { id, name, actionStatus } = this.state
         let isDone = name && actionStatus !== 2
         return (
             <Fragment>
-                <Modal show={this.props.isOpen} onHide={this.props.isClose}>
+                <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>{id ? 'Edit Department' : 'Add New Department'} </Modal.Title>
                     </Modal.Header>
@@ -75,4 +68,7 @@ class EntryForm extends Component {
         )
     }
 }
-export default connect(null, { storeData, updateData, updateActionStatus })(EntryForm)
+const mapStateToProps = state => ({
+    common: state.common
+})
+export default connect(mapStateToProps, { storeData, updateData, updateActionStatus })(EntryForm)

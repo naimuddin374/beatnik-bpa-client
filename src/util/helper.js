@@ -42,3 +42,47 @@ export const modalStyle = (width = "700px") => {
         }
     }
 }
+
+export const setEndTime = startTime => {
+    if (startTime === "09:00:00") {
+        return "09:30:00"
+    } else if (startTime === "09:30:00") {
+        return "10:00:00"
+    } else if (startTime === "10:00:00") {
+        return "10:30:00"
+    } else if (startTime === "10:30:00") {
+        return "11:00:00"
+    } else if (startTime === "11:00:00") {
+        return "11:30:00"
+    } else if (startTime === "11:30:00") {
+        return "12:00:00"
+    } else if (startTime === "12:00:00") {
+        return "12:30:00"
+    } else if (startTime === "12:30:00") {
+        return "13:00:00"
+    } else if (startTime === "13:00:00") {
+        return "13:30:00"
+    } else if (startTime === "13:30:00") {
+        return "14:00:00"
+    } else if (startTime === "14:00:00") {
+        return "14:30:00"
+    } else if (startTime === "14:30:00") {
+        return "15:00:00"
+    } else if (startTime === "15:00:00") {
+        return "15:30:00"
+    } else if (startTime === "15:30:00") {
+        return "16:00:00"
+    } else if (startTime === "16:00:00") {
+        return "16:30:00"
+    } else if (startTime === "16:30:00") {
+        return "17:00:00"
+    } else if (startTime === "17:00:00") {
+        return "17:30:00"
+    } else if (startTime === "17:30:00") {
+        return "18:00:00"
+    } else if (startTime === "18:00:00") {
+        return "18:30:00"
+    } else if (startTime === "18:30:00") {
+        return "19:00:00"
+    } 
+}
