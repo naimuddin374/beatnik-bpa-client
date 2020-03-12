@@ -1,10 +1,12 @@
-import { SET_USER, LOGIN_ACTION_STATUS } from '../actions/types'
+import { SET_USER, LOGIN_ACTION_STATUS, FORGOT_PASS_STATUS, RESET_PASSWORD } from '../actions/types'
 
 const init = {
     time: {},
     user: {},
     isAuth: false,
-    status: 0 //0=Before submit, 1=Submit, 2=Success, 3=Failed
+    status: 0, //0=Before submit, 1=Submit, 2=Success, 3=Failed
+    forgotStatus: 0,
+    resetStatus: 0,
 }
 
 const authReducer = (state = init, action) => {
@@ -23,6 +25,20 @@ const authReducer = (state = init, action) => {
                 return {
                     ...state,
                     status: action.payload || 0,
+                }
+            }
+        case FORGOT_PASS_STATUS:
+            {
+                return {
+                    ...state,
+                    forgotStatus: action.payload || 0,
+                }
+            }
+        case RESET_PASSWORD:
+            {
+                return {
+                    ...state,
+                    resetStatus: action.payload || 0,
                 }
             }
         default:

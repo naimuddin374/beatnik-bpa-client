@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { deleteData } from '../../store/actions/meetingActions'
+import { deleteData, completeMeeting } from '../../store/actions/meetingActions'
 import { connect } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../../store/actions/types';
@@ -12,6 +12,7 @@ class MeetingDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userId: props.auth.user.id,
             loading: true,
             data: [],
             detail: [],
@@ -47,8 +48,12 @@ class MeetingDetail extends Component {
         this.props.deleteData(id)
         this.props.history.push('/')
     }
+    completeHandler = id => {
+        this.props.completeMeeting(id)
+        this.props.history.push('/')
+    }
     render() {
-        let { data, detail, isModalOpen } = this.state
+        let { data, detail, isModalOpen, userId } = this.state
         return (
             <Fragment>
                 <div className="content">
@@ -69,24 +74,38 @@ class MeetingDetail extends Component {
                                                     </div>
                                                     <div className="col-lg-4">
                                                         <strong className="card-title">Created By: <Link to={`/profile/${item.user_id}`}>{item.user_name}</Link></strong>
-                                                        <Button
-                                                            type="button"
-                                                            className="text-white float-right btn btn-primary ml-5"
-                                                            variant="danger"
-                                                            title="Cancel Meeting"
-                                                            onClick={() => this.deleteHandler(item.id)}
-                                                        ><i className="fa fa-close" /></Button>
+                                                        {Number(item.status) === 1 && Number(item.user_id) === Number(userId) &&
+                                                            <div>
+                                                                <Button
+                                                                    type="button"
+                                                                    className="text-white float-right btn btn-primary ml-5"
+                                                                    variant="danger"
+                                                                    size="sm"
+                                                                    title="Cancel Meeting"
+                                                                    onClick={() => window.confirm('Are you sure?') && this.deleteHandler(item.id)}
+                                                                ><i className="fa fa-close" /></Button>
 
-                                                        <Button
-                                                            type="button"
-                                                            className="text-white float-right btn btn-primary"
-                                                            variant="transparent"
-                                                            title="Edit Information"
-                                                            onClick={() => this.setState({ isModalOpen: true })}
-                                                        ><i className="fa fa-edit" /></Button>
+                                                                <Button
+                                                                    type="button"
+                                                                    className="text-white float-right btn btn-primary"
+                                                                    variant="transparent"
+                                                                    title="Edit Information"
+                                                                    size="sm"
+                                                                    onClick={() => window.confirm('Are you sure?') && this.setState({ isModalOpen: true })}
+                                                                ><i className="fa fa-edit" /></Button>
+
+                                                                <Button
+                                                                    type="button"
+                                                                    className="text-white float-right btn btn-primary mr-5"
+                                                                    variant="success"
+                                                                    size="sm"
+                                                                    title="Complete Meeting"
+                                                                    onClick={() => window.confirm('Are you sure?') && this.completeHandler(item.id)}
+                                                                ><i className="fa fa-check" /></Button>
+                                                            </div>}
                                                     </div>
                                                 </div>
-                                                <div className="row mt-5">
+                                                <div className="row mt-3">
                                                     <div className="col-lg-12">
                                                         <p>Meeting Agenda: {item.note}</p>
                                                     </div>
@@ -101,8 +120,8 @@ class MeetingDetail extends Component {
                                                         <div className="feed-box text-center">
                                                             <section className="card">
                                                                 <div className="card-body">
-                                                                    <img className="align-self-center rounded-circle mr-3" width="65" height="65" alt="ProfilePicture" src={user.image ? API_URL + user.image : `/images/admin.jpg`} />
-                                                                    <h4><Link to={`/profile/${user.user_id}`}>{user.name}</Link></h4>
+                                                                    <img className="align-self-center rounded-circle mr-3" width="65" height="65" alt="ProfilePicture" src={user.image ? API_URL + user.image : `/images/no_image.png`} />
+                                                                    <h4><Link to={`/profile/${user.id}`}>{user.name}</Link></h4>
                                                                     <h4>{user.designation}</h4>
                                                                     <div className="card-text text-sm-center">
                                                                         <a href={`${user.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>
@@ -129,10 +148,11 @@ class MeetingDetail extends Component {
                         isClose={this.closeModal}
                         actionIsDone={this.actionIsDone}
                         actionType={'EDIT'}
-                        editData={data}
+                        editData={data[0]}
                         selectedDate={new Date()}
                         selectedTime={null}
-                    />}
+                    />
+                }
             </Fragment>
         )
     }
@@ -140,4 +160,4 @@ class MeetingDetail extends Component {
 const mapStateToProps = state => ({
     auth: state.auth,
 })
-export default connect(mapStateToProps, { deleteData })(MeetingDetail)
+export default connect(mapStateToProps, { deleteData, completeMeeting })(MeetingDetail)

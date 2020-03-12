@@ -1,65 +1,86 @@
 import React, { Component, Fragment } from 'react'
 import Axios from 'axios'
 import { API_URL } from '../../store/actions/types'
-import Loading from '../layout/Loading';
-import { textLimit } from '../../util/helper';
 import { Link } from 'react-router-dom';
+import Loading from '../layout/Loading'
 
-
-class EmployeeList extends Component {
+class EmployeeProfile extends Component {
     state = {
-        isLoading: true,
-        data: []
+        departments: {},
+        users: {},
+        loading: true,
     }
     componentDidMount() {
-        this.setState({
-            isLoading: true,
-            data: [],
-        })
+        this.onFetchData()
+    }
+    onFetchData = () => {
+        Axios.get(`${API_URL}api/department`)
+            .then(res => {
+                this.setState({
+                    departments: res.data
+                })
+            })
+            .catch(error => console.log(error.response))
         Axios.get(`${API_URL}api/user`)
             .then(res => {
                 this.setState({
-                    isLoading: false,
-                    data: res.data
+                    loading: false,
+                    users: res.data
                 })
             })
             .catch(error => console.log(error.response))
     }
     render() {
-        let { data, isLoading } = this.state
+        let { departments, users, loading } = this.state
         return (
-            < Fragment >
+            <Fragment>
                 <div className="content">
                     <div className="animated fadeIn">
                         <div className="row">
-                            {isLoading ? <Loading /> : Object.keys(data).length !== 0 &&
-                                data.map(item => (
-                                    <div className="col-md-4" key={item.id}>
-                                        <div className="card">
-                                            <div className="card-body profile-card-body">
-                                                <div className="mx-auto d-block">
-                                                    <img className="rounded-circle mx-auto d-block employee-image" src={item.image ? `${API_URL + item.image}` : `/images/admin.jpg`} alt="CardImageCap" />
-                                                    <h4 className="text-sm-center mt-2 mb-1 employee-name"><Link to={`/profile/${item.id}`}>{item.name}</Link></h4>
-                                                    <h5 className="text-sm-center mt-2 mb-1">{item.designation}</h5>
-                                                    <div className="location text-sm-center"><i className="fa fa-map-marker"></i> {item.address}</div>
-                                                    <p className="location text-sm-center">{textLimit(item.bio)}</p>
-                                                </div>
-                                                <hr />
-                                                <div className="card-text text-sm-center">
-                                                    <a href={`${item.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>
-                                                    <a href={`${item.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>
-                                                    <a href={`${item.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>
-                                                </div>
-                                            </div>
-                                        </div>
+
+                            <div className="col-md-12">
+                                <div className="card">
+                                    <div className="card-header">
+                                        <strong className="card-title">Others Profile</strong>
                                     </div>
-                                ))}
+                                    {loading && <Loading />}
+                                    <div className="card-body">
+                                        {Object.keys(departments).length !== 0 &&
+                                            departments.map(depart => <table className="table" key={depart.id}>
+                                                <thead>
+                                                    <tr>
+                                                        <th colSpan="10" className="bg-dark text-white">{depart.name}</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th colSpan="2">Name</th>
+                                                        <th>Designation</th>
+                                                        <th>Email</th>
+                                                        <th>Contact Number</th>
+                                                        <th>Joining Date</th>
+                                                        <th>View More</th>
+                                                    </tr>
+                                                    {Object.keys(users).length !== 0 &&
+                                                        users.map(user => Number(user.department_id) === Number(depart.id) && <tr key={user.id}>
+                                                            <td>{user.employee_id}</td>
+                                                            <td colSpan="2"><Link to={`/profile/${user.id}`}>{user.name}</Link></td>
+                                                            <td>{user.designation}</td>
+                                                            <td>{user.email}</td>
+                                                            <td>{user.contact !== 'NULL' && user.contact}</td>
+                                                            <td>{user.joining_date}</td>
+                                                            <td><Link to={`/profile/${user.id}`}>Click Here</Link></td>
+                                                        </tr>)}
+
+                                                </thead>
+                                            </table>)}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </Fragment >
+            </Fragment>
         )
     }
 }
-
-export default EmployeeList
+export default EmployeeProfile

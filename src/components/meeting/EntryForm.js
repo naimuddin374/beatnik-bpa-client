@@ -22,7 +22,7 @@ class EntryForm extends Component {
             date: props.editData.date || props.selectedDate,
             start_time: props.editData.start_time || props.selectedTime,
             end_time: end_time,
-            status: props.editData.status || 1,
+            status: 1,
             note: props.editData.note || null,
             user_id: this.props.auth.user.id,
             actionStatus: 0,
@@ -65,6 +65,7 @@ class EntryForm extends Component {
                         if ((start_time < item.start_time && end_time > item.start_time) || (end_time > item.start_time && end_time < item.end_time)) {
                             isReady = false
                         }
+                        return true
                     })
                 }
                 if (!isReady) {
@@ -80,8 +81,8 @@ class EntryForm extends Component {
             .catch(err => console.log('err', err))
     }
     render() {
-        let { id, date, start_time, end_time, status, note } = this.state
-        let isDone = date && start_time && end_time && status && start_time < end_time
+        let { id, date, start_time, end_time, note, actionStatus } = this.state
+        let isDone = date && note && start_time && end_time && start_time < end_time && actionStatus !== 1
 
         return (
             <Fragment>
@@ -159,7 +160,7 @@ class EntryForm extends Component {
                                 </Form.Control>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>Meeting Agenda</Form.Label>
+                                <Form.Label>Meeting Agenda<span>*</span></Form.Label>
                                 <Form.Control
                                     type="text"
                                     className="form-control"
@@ -171,11 +172,11 @@ class EntryForm extends Component {
                             </Form.Group>
 
                             <Form.Group>
-                                <Form.Label>Audience Status</Form.Label>
+                                <Form.Label>Select Audience</Form.Label>
                                 <AudienceSection audienceHandler={this.audienceHandler} meetingId={id} />
                             </Form.Group>
 
-                            <Form.Group>
+                            {/* <Form.Group>
                                 <Form.Label>Status<span>*</span></Form.Label>
                                 <Form.Control
                                     as="select"
@@ -188,9 +189,9 @@ class EntryForm extends Component {
                                     <option value="1">Active</option>
                                     <option value="3">Done</option>
                                 </Form.Control>
-                            </Form.Group>
+                            </Form.Group> */}
 
-                            <Button type="submit" variant="dark" block disabled={!isDone}>Submit</Button>
+                            <Button type="submit" variant="dark" block disabled={!isDone}>{actionStatus === 1 ? "Please Wait..." : "Submit"}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>

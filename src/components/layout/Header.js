@@ -4,24 +4,21 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { connect } from 'react-redux';
 import { logout } from '../../store/actions/authActions';
-// import authUser from '../../util/authUser';
 import { API_URL } from '../../store/actions/types';
 import { Link } from 'react-router-dom';
 import ChangePassword from '../profile/ChangePassword';
 import logo from '../assets/images/logo.png';
 
 class Header extends Component {
-    state = {
-        isModalOpen: false,
-        user: this.props.auth.user
-    }
-    closeModal = () => {
-        this.setState({
+    constructor(props) {
+        super(props)
+        this.state = {
             isModalOpen: false,
-        })
+            user: props.auth.user
+        }
     }
     render() {
-        let { user } = this.state
+        let { user, isOpen } = this.state
         return (
             <Fragment>
                 <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="header-menu-area">
@@ -29,16 +26,16 @@ class Header extends Component {
                         <img className="header-logo" src={logo} alt="BeatnikLogo" />
                     </Link>
                     <Nav>
-                        <img className="user-avatar" src={user.image ? `${API_URL + user.image}` : 'images/admin.jpg'} alt="User Avatar" />
+                        <img className="user-avatar" src={user.image ? `${API_URL + user.image}` : '/images/no_image.png'} alt="User Avatar" />
                         <NavDropdown title={user.name} id="collasible-nav-dropdown">
-                            <Link className="dropdown-item" to={`/my-profile`}> <i className="fa fa-user"></i> Profile</Link>
+                            <Link className="dropdown-item" to={`/profile/${user.id}`}> <i className="fa fa-user"></i> Profile</Link>
                             <NavDropdown.Item href="#action" onClick={() => this.setState({ isModalOpen: true })}><i className="fa fa-lock"></i> Change Password</NavDropdown.Item>
                             <NavDropdown.Item href="#action" onClick={() => this.props.logout(this.props.history)}><i className="fa fa-power-off"></i> Logout</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
                     <ChangePassword
-                        isOpen={this.state.isModalOpen}
-                        isClose={this.closeModal}
+                        isOpen={isOpen}
+                        isClose={() => this.setState({ isOpen: false })}
                         user={user}
                     />
                 </Navbar>

@@ -1,13 +1,13 @@
-import { SET_MESSAGE, API_URL, EMP_ADD_STATUS } from './types'
+import { SET_MESSAGE, API_URL, CONVEYANCE_STATUS } from './types'
 import Axios from 'axios'
 
 // Data Store
 export const storeData = data => dispatch => {
     dispatch({
-        type: EMP_ADD_STATUS,
+        type: CONVEYANCE_STATUS,
         payload: 1
     })
-    Axios.post(`${API_URL}api/user`, data)
+    Axios.post(`${API_URL}api/conveyance`, data)
         .then(res => {
             dispatch({
                 type: SET_MESSAGE,
@@ -16,20 +16,20 @@ export const storeData = data => dispatch => {
                 }
             })
             dispatch({
-                type: EMP_ADD_STATUS,
+                type: CONVEYANCE_STATUS,
                 payload: 2
             })
 
             setTimeout(() => {
                 dispatch({
-                    type: EMP_ADD_STATUS,
+                    type: CONVEYANCE_STATUS,
                     payload: 0
                 })
             }, 100)
         })
         .catch(err => {
             dispatch({
-                type: EMP_ADD_STATUS,
+                type: CONVEYANCE_STATUS,
                 payload: 3
             })
             dispatch({
@@ -46,32 +46,31 @@ export const storeData = data => dispatch => {
 // Data Update
 export const updateData = (data, id) => dispatch => {
     dispatch({
-        type: EMP_ADD_STATUS,
+        type: CONVEYANCE_STATUS,
         payload: 1
     })
-    Axios.put(`${API_URL}api/user/${id}`, data)
+    Axios.put(`${API_URL}api/conveyance/${id}`, data)
         .then(res => {
-            dispatch({
-                type: EMP_ADD_STATUS,
-                payload: 2
-            })
             dispatch({
                 type: SET_MESSAGE,
                 payload: {
                     message: res.data.message,
                 }
             })
-
+            dispatch({
+                type: CONVEYANCE_STATUS,
+                payload: 2
+            })
             setTimeout(() => {
                 dispatch({
-                    type: EMP_ADD_STATUS,
+                    type: CONVEYANCE_STATUS,
                     payload: 0
                 })
             }, 100)
         })
         .catch(err => {
             dispatch({
-                type: EMP_ADD_STATUS,
+                type: CONVEYANCE_STATUS,
                 payload: 3
             })
             dispatch({
@@ -86,7 +85,50 @@ export const updateData = (data, id) => dispatch => {
 
 // Data Delete
 export const deleteData = id => dispatch => {
-    Axios.delete(`${API_URL}api/user/${id}`)
+    Axios.delete(`${API_URL}api/conveyance/${id}`)
+        .then(res => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: res.data.message,
+                }
+            })
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: err.response.data.message,
+                    type: 'error',
+                }
+            })
+        })
+}
+
+// Data approve
+export const approveData = id => dispatch => {
+    Axios.get(`${API_URL}api/conveyance-approve/${id}`)
+        .then(res => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: res.data.message,
+                }
+            })
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: err.response.data.message,
+                    type: 'error',
+                }
+            })
+        })
+}
+// Data reject
+export const rejectData = id => dispatch => {
+    Axios.get(`${API_URL}api/conveyance-reject/${id}`)
         .then(res => {
             dispatch({
                 type: SET_MESSAGE,

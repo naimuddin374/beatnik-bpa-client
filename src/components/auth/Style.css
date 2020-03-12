@@ -1,0 +1,70 @@
+.left-card-section {
+    padding: 30px;
+    position: relative;
+    width: 50%;
+    float: left;
+    color: #fff;
+    height: 100vh;
+    background: rgb(67, 151, 135);
+    background: linear-gradient(60deg, rgba(67, 151, 135, 1) 0%, rgba(102, 215, 229, 1) 72%);
+}
+
+
+.left-card-section .company-information {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    width: 70%;
+}
+
+.right-card-section {
+    padding: 30px;
+    background-color: #fff;
+    width: 50%;
+    float: right;
+    color: #000;
+    height: 100vh;
+    position: relative;
+}
+
+.login-form-area {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    width: 50%;
+    color: #000;
+}
+
+.login-form-area input {
+    height: 50px;
+}
+
+button.sign-in-btn {
+    background: #5fcbd3;
+    border: #5fcbd3;
+    color: #000;
+    font-weight: 500;
+    height: 50px;
+}
+
+button.sign-in-btn:hover {
+    background: #4aa59b;
+    border: #4aa59b;
+    color: #fff;
+}
+
+.login-form-area .btn-primary.disabled,
+.login-form-area .btn-primary:disabled {
+    color: #fff;
+    background-color: #66d7e5;
+    border-color: #66d7e5;
+}
+
+.forgot-password-area h4 {
+    margin-top: 20px;
+    text-decoration: underline;
+    color: #000;
+    cursor: pointer;
+}

@@ -4,7 +4,6 @@ import { storeData, updateData } from '../../store/actions/departmentActions'
 
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
-import { updateActionStatus } from '../../store/actions/commonActions';
 
 
 class EntryForm extends Component {
@@ -40,7 +39,7 @@ class EntryForm extends Component {
     }
     render() {
         let { id, name, actionStatus } = this.state
-        let isDone = name && actionStatus !== 2
+        let isDone = name && actionStatus !== 1
         return (
             <Fragment>
                 <Modal show={this.props.isOpen} onHide={this.props.isClose} size="lg">
@@ -60,7 +59,7 @@ class EntryForm extends Component {
                                     placeholder="Enter Department Name"
                                 />
                             </Form.Group>
-                            <Button type="submit" variant="dark" block disabled={!isDone}>{actionStatus === 2 ? `Please Wait...` : `Submit`}</Button>
+                            <Button type="submit" variant="dark" block disabled={!isDone}>{actionStatus === 1 ? `Please Wait...` : `Submit`}</Button>
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -71,4 +70,4 @@ class EntryForm extends Component {
 const mapStateToProps = state => ({
     common: state.common
 })
-export default connect(mapStateToProps, { storeData, updateData, updateActionStatus })(EntryForm)
+export default connect(mapStateToProps, { storeData, updateData })(EntryForm)

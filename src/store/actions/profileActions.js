@@ -1,20 +1,20 @@
-import { SET_MESSAGE, API_URL, PROFILE_EDIT_STATUS, PASS_UPDATE_STATUS } from './types'
+import * as Types from './types'
 import Axios from 'axios'
 
 // Update profile picture 
-export const updateProfileInfo = (data, id) => dispatch => {
+export const updateUserProfilePhoto = (data, id) => dispatch => {
     dispatch({
-        type: PROFILE_EDIT_STATUS,
+        type: Types.EDIT_PROFILE_PHOTO,
         payload: 1
     })
-    Axios.put(`${API_URL}api/update-user-info/${id}`, data)
+    Axios.put(`${Types.API_URL}api/update-profile-photo/${id}`, data)
         .then(res => {
             dispatch({
-                type: PROFILE_EDIT_STATUS,
+                type: Types.EDIT_PROFILE_PHOTO,
                 payload: 2
             })
             dispatch({
-                type: SET_MESSAGE,
+                type: Types.SET_MESSAGE,
                 payload: {
                     message: res.data.message,
                 }
@@ -22,18 +22,59 @@ export const updateProfileInfo = (data, id) => dispatch => {
 
             setTimeout(() => {
                 dispatch({
-                    type: PROFILE_EDIT_STATUS,
+                    type: Types.EDIT_PROFILE_PHOTO,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
-                type: PROFILE_EDIT_STATUS,
+                type: Types.EDIT_PROFILE_PHOTO,
                 payload: 3
             })
             dispatch({
-                type: SET_MESSAGE,
+                type: Types.SET_MESSAGE,
+                payload: {
+                    message: err.response.data.message,
+                    type: 'error',
+                }
+            })
+        })
+}
+
+// Update profile info 
+export const updateProfileInfo = (data, id) => dispatch => {
+    dispatch({
+        type: Types.PROFILE_EDIT_STATUS,
+        payload: 1
+    })
+    Axios.put(`${Types.API_URL}api/update-user-info/${id}`, data)
+        .then(res => {
+            dispatch({
+                type: Types.PROFILE_EDIT_STATUS,
+                payload: 2
+            })
+            dispatch({
+                type: Types.SET_MESSAGE,
+                payload: {
+                    message: res.data.message,
+                }
+            })
+
+            setTimeout(() => {
+                dispatch({
+                    type: Types.PROFILE_EDIT_STATUS,
+                    payload: 0
+                })
+            }, 100)
+        })
+        .catch(err => {
+            dispatch({
+                type: Types.PROFILE_EDIT_STATUS,
+                payload: 3
+            })
+            dispatch({
+                type: Types.SET_MESSAGE,
                 payload: {
                     message: err.response.data.message,
                     type: 'error',
@@ -45,36 +86,36 @@ export const updateProfileInfo = (data, id) => dispatch => {
 // Change Password 
 export const updatePassword = (data, id) => dispatch => {
     dispatch({
-        type: PASS_UPDATE_STATUS,
+        type: Types.PASS_UPDATE_STATUS,
         payload: 1
     })
-    Axios.put(`${API_URL}api/update-password/${id}`, data)
+    Axios.put(`${Types.API_URL}api/update-password/${id}`, data)
         .then(res => {
             dispatch({
-                type: SET_MESSAGE,
+                type: Types.SET_MESSAGE,
                 payload: {
                     message: res.data.message,
                 }
             })
             dispatch({
-                type: PASS_UPDATE_STATUS,
+                type: Types.PASS_UPDATE_STATUS,
                 payload: 2
             })
 
             setTimeout(() => {
                 dispatch({
-                    type: PASS_UPDATE_STATUS,
+                    type: Types.PASS_UPDATE_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
-                type: PASS_UPDATE_STATUS,
+                type: Types.PASS_UPDATE_STATUS,
                 payload: 3
             })
             dispatch({
-                type: SET_MESSAGE,
+                type: Types.SET_MESSAGE,
                 payload: {
                     message: err.response.data.message,
                     type: 'error',

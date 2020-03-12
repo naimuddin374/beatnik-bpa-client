@@ -25,7 +25,7 @@ export const storeData = data => dispatch => {
                     type: MEETING_ROOM_BOOK,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -66,7 +66,7 @@ export const updateData = (data, id) => dispatch => {
                     type: MEETING_ROOM_BOOK,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -86,6 +86,28 @@ export const updateData = (data, id) => dispatch => {
 // Data Delete
 export const deleteData = id => dispatch => {
     Axios.delete(`${API_URL}api/meeting/${id}`)
+        .then(res => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: res.data.message,
+                }
+            })
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_MESSAGE,
+                payload: {
+                    message: err.response.data.message,
+                    type: 'error',
+                }
+            })
+        })
+}
+
+// Meeting completed
+export const completeMeeting = id => dispatch => {
+    Axios.put(`${API_URL}api/meeting-complete/${id}`)
         .then(res => {
             dispatch({
                 type: SET_MESSAGE,

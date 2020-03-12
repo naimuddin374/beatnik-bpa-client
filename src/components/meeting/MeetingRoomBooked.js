@@ -68,9 +68,7 @@ class MeetingRoomBooked extends Component {
             .catch(error => console.log(error.response))
     }
     hourBoxView = hour => {
-        let { authUser } = this.state
-
-        let background = "bg-white";
+        let background = "meeting-bg-div bg-white";
         let note = ""
         let body = <Button
             type="submit"
@@ -88,37 +86,11 @@ class MeetingRoomBooked extends Component {
         if (Object.keys(this.state.toDayMeeting).length !== 0) {
             this.state.toDayMeeting.map(item => {
                 if (item.start_time === hour || (item.start_time < hour && item.end_time > hour)) {
-                    background = "bg-secondary"
+                    background = Number(item.status) === 3 ? "meeting-bg-div bg-success" : "meeting-bg-div bg-secondary"
                     note = item.note
-                    if (item.user_id === authUser.id) {
-                        body = <div>
-                            {/* <small className="d-block">{item.note}</small> */}
-                            <div className="d-block">
-                                <Link className="text-white float-left ml-3" to={`/meeting-detail/${item.id}`}><i className="fa fa-eye" title="Detail" /></Link>
-
-                                <Button
-                                    type="button"
-                                    className="text-white float-right"
-                                    variant="transparent"
-                                    onClick={() => this.setState({
-                                        actionType: "EDIT",
-                                        isModalOpen: true,
-                                        editData: item,
-                                    })}
-                                ><i className="fa fa-edit" title="Edit" /></Button>
-                                {/* <Button
-                                    type="button"
-                                    className="text-white float-right"
-                                    variant="transparent"
-                                    onClick={() => this.deleteHandler(item.id)}
-                                > <i className="fa fa-trash ml-2 text-danger" title="Delete" />
-                                </Button> */}
-                            </div>
-                        </div >
-                    } else {
-                        body = <Link className="text-white" to={`/meeting-detail/${item.id}`}><i className="fa fa-eye" title="Detail" /></Link>
-                    }
+                    body = <Link className="d-block text-white" to={`/meeting-detail/${item.id}`}>{item.note}</Link>
                 }
+                return true;
             })
         }
         return <div className={background} title={note}>{body}</div>
@@ -129,7 +101,7 @@ class MeetingRoomBooked extends Component {
 
         return (
             <Fragment>
-                {loading ? <Loading /> :
+                {loading ? <tr><td colSpan="12"><Loading /></td></tr> :
                     <tr>
                         {totalTime.map((time, index) => (
                             <td key={time + index} className="border-right">

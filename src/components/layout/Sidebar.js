@@ -30,17 +30,24 @@ class Sidebar extends Component {
                                 <li className={pathname === "meeting" ? "active" : ''}>
                                     <Link to='/meeting'><i className="menu-icon fa fa-users" />Meeting </Link>
                                 </li>
+                                <li className={pathname === "conveyance" ? "active" : ''}>
+                                    <Link to='/conveyance'><i className="menu-icon fa fa-money" />Conveyance</Link>
+                                </li>
                                 <li className={pathname === "leave" ? "active" : ''}>
                                     <Link to='/leave'><i className="menu-icon fa fa-laptop" />Leave </Link>
                                 </li>
+                                {Number(user.role) === 3 &&
+                                    <li className={pathname === "employee" ? "active" : ''}>
+                                        <Link to='/my-team'><i className="menu-icon fa fa-users" />My Team</Link>
+                                    </li>}
                                 <li className={pathname === "employee" ? "active" : ''}>
-                                    <Link to='/employee'><i className="menu-icon fa fa-users" />Employee Profile</Link>
+                                    <Link to='/employee'><i className="menu-icon fa fa-users" />Other Profile</Link>
                                 </li>
-                                {user.role === 2 &&
+                                {Number(user.role) === 2 &&
                                     <li className={pathname === "user" ? "active" : ''}>
                                         <Link to='/user'><i className="menu-icon fa fa-users" />Employee </Link>
                                     </li>}
-                                {user.role === 2 &&
+                                {Number(user.role) === 2 &&
                                     <li className={pathname === "department" ? "active" : ''}>
                                         <Link to='/department'><i className="menu-icon fa fa-laptop" />Department </Link>
                                     </li>}

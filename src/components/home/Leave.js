@@ -1,21 +1,20 @@
 import React, { Component, Fragment } from 'react'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
-import EntryForm from './EntryForm'
+import EntryForm from '../leave/EntryForm'
 import { deleteData, leaveApprove } from '../../store/actions/leaveActions'
 import { connect } from 'react-redux';
 import Axios from 'axios'
 import { API_URL } from '../../store/actions/types'
-import RejectNote from './RejectNote';
+import RejectNote from '../leave/RejectNote';
 import { Link } from 'react-router-dom';
-import { Button } from 'react-bootstrap';
 
 
 class Leave extends Component {
     state = {
         data: [],
         editData: {},
-        isOpen: false,
+        isModalOpen: false,
         isRejectModalOpen: false,
         loading: true,
         page: 1,
@@ -29,7 +28,7 @@ class Leave extends Component {
     }
     closeModal = () => {
         this.setState({
-            isOpen: false,
+            isModalOpen: false,
             isRejectModalOpen: false
         })
     }
@@ -58,12 +57,21 @@ class Leave extends Component {
             data: [],
             editData: {},
         })
-        Axios.get(`${API_URL}api/all-leave/${authUser.id}`)
+        Axios.get(`${API_URL}api/my-leave/${authUser.id}`)
             .then(res => {
-                this.setState({
-                    loading: false,
-                    data: res.data
-                })
+                if (Object.keys(res.data).length !== 0) {
+                    let data = res.data.filter(item => Number(item.status) === 0)
+                    this.setState({
+                        loading: false,
+                        data
+                    })
+                } else {
+                    this.setState({
+                        loading: false,
+                        data: []
+                    })
+                }
+
             })
             .catch(error => console.log(error.response))
     }
@@ -72,37 +80,31 @@ class Leave extends Component {
         let userRole = this.state.authUser.role
         if (Number(userRole) === 3 && Number(status) === 0) {
             return <span>
-                <Button
-                    type="button"
-                    variant="success"
-                    size="sm"
-                    className="mr-4"
-                    onClick={() => window.confirm('Are you sure?') && this.leaveApprove(id)}
-                ><i className="fa fa-check" /></Button>
-                <Button
-                    type="button"
-                    variant="danger"
-                    size="sm"
-                    className="ml-4"
-                    onClick={() => window.confirm('Are you sure?') && this.setState({
+                <button
+                    className='btn btn-sm btn-success mr-4'
+                    onClick={() => this.leaveApprove(id)}
+                ><i className="fa fa-check" /></button>
+                <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => this.setState({
                         actionType: "EDIT",
                         editData: data,
                         isRejectModalOpen: true
                     })}
-                ><i className="fa fa-close" /></Button>
+                > <i className="fa fa-close" /> </button>
+
             </span>
         } else if (Number(userRole) === 1 && Number(status) === 2) {
             return <span>
-                <Button
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    onClick={() => window.confirm('Are you sure?') && this.setState({
+                <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => this.setState({
                         actionType: "EDIT",
                         editData: data,
-                        isOpen: true
+                        isModalOpen: true
                     })}
-                ><i className="fa fa-pencil" /></Button>
+                > <i className="fa fa-pencil" /> </button>
+
             </span>
         }
     }
@@ -131,7 +133,7 @@ class Leave extends Component {
             {
                 Header: 'Type',
                 accessor: 'type',
-                Cell: row => <span>{(Number(row.original.type) === 1 && 'Casual') || (Number(row.original.type) === 2 && 'Sick') || (Number(row.original.type) === 3 && 'Other')}</span>,
+                Cell: row => <span>{(Number(row.original.type) === 1 && 'Casual') || (Number(row.original.status) === 2 && 'Sick') || (Number(row.original.status) === 3 && 'Other')}</span>,
             },
             {
                 Header: 'Supervisor',
@@ -163,7 +165,7 @@ class Leave extends Component {
                 accessor: 'created_at',
             },
         ];
-        let { data, limit, loading, actionType, editData, isOpen, isRejectModalOpen } = this.state
+        let { data, limit, loading, actionType, editData, isModalOpen, isRejectModalOpen } = this.state
         return (
             <Fragment>
                 <div className="content">
@@ -173,11 +175,11 @@ class Leave extends Component {
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <strong className="card-title">Leave Lists</strong>
-                                        <button className="btn btn-primary float-right" onClick={() => this.setState({
+                                        <strong className="card-title">List of Pending Leave</strong>
+                                        {/* <button className="btn btn-primary float-right" onClick={() => this.setState({
                                             actionType: "ADD",
-                                            isOpen: true
-                                        })}>Add New</button>
+                                            isModalOpen: true
+                                        })}>Add New</button> */}
                                     </div>
                                     <div className="card-body">
                                         <ReactTable
@@ -188,9 +190,9 @@ class Leave extends Component {
                                             noDataText='No rows found!'
                                             loading={loading}
                                         />
-                                        {isOpen &&
+                                        {isModalOpen &&
                                             <EntryForm
-                                                isOpen={isOpen}
+                                                isOpen={isModalOpen}
                                                 isClose={this.closeModal}
                                                 actionIsDone={this.actionIsDone}
                                                 actionType={actionType}

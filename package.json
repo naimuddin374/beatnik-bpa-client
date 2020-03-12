@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "https://fantasykingdom.btlbd.xyz/",
+  "homepage": "https://bpa.btlbd.xyz/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -35,7 +35,7 @@
     "sweetalert2": "^9.5.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=3006 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

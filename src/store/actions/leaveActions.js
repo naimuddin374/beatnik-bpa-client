@@ -24,7 +24,7 @@ export const storeData = data => dispatch => {
                     type: LEAVE_MAN_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -65,7 +65,7 @@ export const updateData = (data, id) => dispatch => {
                     type: LEAVE_MAN_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -127,7 +127,7 @@ export const leaveApprove = id => dispatch => {
                     type: LEAVE_MAN_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -167,7 +167,7 @@ export const leaveReject = (data, id) => dispatch => {
                     type: LEAVE_MAN_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({

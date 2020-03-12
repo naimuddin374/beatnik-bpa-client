@@ -61,12 +61,12 @@ class Department extends Component {
             },
             {
                 Header: 'Action',
-                Cell: row => <span><button className="btn btn-primary btn-sm" onClick={() => this.setState({
+                Cell: row => <span><button className="btn btn-primary btn-sm" onClick={() => window.confirm('Are you sure?') && this.setState({
                     actionType: "EDIT",
                     editData: row.original,
                     isModalOpen: true
                 })}><i className="fa fa-edit"></i></button>
-                    <button className="btn btn-danger ml-2 btn-sm" onClick={() => { if (window.confirm('Delete the item?')) { this.deleteHandler(row.original.id) } }}><i className="fa fa-trash"></i></button>
+                    <button className="btn btn-danger ml-5 btn-sm" onClick={() => window.confirm('Are you sure?') && this.deleteHandler(row.original.id)}><i className="fa fa-trash"></i></button>
                 </span>,
             },
         ];
@@ -95,7 +95,7 @@ class Department extends Component {
                                             noDataText='No rows found!'
                                             loading={loading}
                                         />
-                                        
+
                                         {isModalOpen &&
                                             <EntryForm
                                                 isOpen={isModalOpen}

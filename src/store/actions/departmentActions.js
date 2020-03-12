@@ -25,7 +25,7 @@ export const storeData = data => dispatch => {
                     type: DEPARTMENT_ADD_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({
@@ -66,7 +66,7 @@ export const updateData = (data, id) => dispatch => {
                     type: DEPARTMENT_ADD_STATUS,
                     payload: 0
                 })
-            }, 1000)
+            }, 100)
         })
         .catch(err => {
             dispatch({

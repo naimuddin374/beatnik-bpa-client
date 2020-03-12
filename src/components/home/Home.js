@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react'
-import Sales from './Sales'
-// import Traffic from './Traffic'
-import Order from './Order'
+import MyMeeting from './MyMeeting'
+// import ArchiveMeeting from './ArchiveMeeting'
+import Leave from './Leave'
+
 
 class Home extends Component {
     render() {
@@ -9,12 +10,10 @@ class Home extends Component {
             <Fragment>
                 <div className="content">
                     <div className="animated fadeIn">
-                        <Sales />
-                        {/* <Traffic /> */}
-
+                        <MyMeeting />
                         <div className="clearfix"></div>
-
-                        <Order />
+                        <Leave />
+                        {/* <ArchiveMeeting /> */}
 
                     </div>
                 </div>

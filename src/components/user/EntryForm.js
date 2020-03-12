@@ -23,8 +23,8 @@ class EntryForm extends Component {
             supervisor_id: props.editData.supervisor_id || 0,
             role: props.editData.role || 1,
             type: props.editData.type || 1,
-            casual_leave: props.editData.casual_leave || 10,
-            sick_leave: props.editData.sick_leave || 10,
+            casual_leave: Number(props.editData.casual_leave) || 10,
+            sick_leave: Number(props.editData.sick_leave) || 10,
             name: props.editData.name || null,
             designation: props.editData.designation || null,
             email: props.editData.email || null,
@@ -34,8 +34,8 @@ class EntryForm extends Component {
             salary: props.editData.salary || 0,
             probation_period: props.editData.probation_period || null,
             probationPeriod: props.editData.probation_period ? 1 : 0,
-            status: props.editData.status || 1,
-            isContinue: props.editData.status === 1 ? true : false,
+            status: Number(props.editData.status) || 1,
+            isContinue: Number(props.editData.status) === 1 ? true : false,
             actionStatus: 0
         }
         this.faceDepartment()
@@ -147,6 +147,7 @@ class EntryForm extends Component {
                                     <option value="0">Select Role</option>
                                     <option value="1">Employee</option>
                                     <option value="2">HR</option>
+                                    <option value="5">Account</option>
                                     <option value="3">Supervisor</option>
                                     <option value="4">Admin</option>
                                 </Form.Control>

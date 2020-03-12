@@ -2,22 +2,27 @@ import React, { Component, Fragment } from 'react'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import EntryForm from './EntryForm'
-import { deleteData } from '../../store/actions/departmentActions'
+import { rejectData, approveData } from '../../store/actions/conveyanceActions'
 import { connect } from 'react-redux';
 import Axios from 'axios'
-import { API_URL, BASE_URL } from '../../store/actions/types'
+import { API_URL } from '../../store/actions/types'
 import { Link } from 'react-router-dom';
 
-class User extends Component {
-    state = {
-        data: [],
-        editData: {},
-        isModalOpen: false,
-        loading: true,
-        page: 1,
-        limit: 10,
-        pages: -1,
-        actionType: 'ADD',
+
+class Conveyance extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+            editData: {},
+            isModalOpen: false,
+            loading: true,
+            page: 1,
+            limit: 10,
+            pages: -1,
+            actionType: 'ADD',
+            authUser: props.auth.user
+        }
     }
     componentDidMount() {
         this.onFetchData()
@@ -33,8 +38,14 @@ class User extends Component {
             this.onFetchData()
         }, 500)
     }
-    deleteHandler = id => {
-        this.props.deleteData(id)
+    approveHandler = id => {
+        this.props.approveData(id)
+        setTimeout(() => {
+            this.onFetchData()
+        }, 500)
+    }
+    rejectHandler = id => {
+        this.props.rejectData(id)
         setTimeout(() => {
             this.onFetchData()
         }, 500)
@@ -45,81 +56,60 @@ class User extends Component {
             data: [],
             editData: {},
         })
-        Axios.get(`${API_URL}api/user`)
+        Axios.get(`${API_URL}api/conveyance`)
             .then(res => {
+                let { authUser } = this.state
+                let data = res.data
+                if (Number(authUser.role) !== 5) {
+                    data = data.filter(item => Number(item.user_id) === Number(authUser.id))
+                }
                 this.setState({
                     loading: false,
-                    data: res.data
+                    data
                 })
             })
             .catch(error => console.log(error.response))
     }
+    accessHandler = data => {
+        let { authUser } = this.state
+        if (Number(authUser.role) !== 5 || Number(data.status) !== 0) return null
+        return <span>
+            <button className="btn btn-success mr-2 btn-sm" onClick={() => window.confirm('Are you sure?') && this.approveHandler(data.id)}><i className="fa fa-check"></i></button>
+            <button className="btn btn-danger ml-2 btn-sm" onClick={() => window.confirm('Are you sure?') && this.rejectHandler(data.id)}><i className="fa fa-close"></i></button>
+        </span>
+    }
     render() {
         const columns = [
-            {
-                Header: 'Action',
-                Cell: row => <span><button className="btn btn-secondary btn-sm" onClick={() => window.confirm('Are you sure?') && this.setState({
-                    actionType: "EDIT",
-                    editData: row.original,
-                    isModalOpen: true
-                })}><i className="fa fa-edit"></i></button>
-                    <button className="btn btn-danger ml-4 btn-sm" onClick={() => window.confirm('Are you sure?') && this.deleteHandler(row.original.id)}><i className="fa fa-trash"></i></button>
-                </span>,
-            },
-            {
-                Header: 'ID',
-                accessor: 'employee_id',
-            },
             {
                 Header: 'Avatar',
                 accessor: 'avatar',
                 Cell: row => <span className="avatar">
                     <div className="round-img">
-                        <img className="employee-image" src={row.original.image ? API_URL + row.original.image : `/images/no_image.png`} alt="Employee Avatar" height="50" />
+                        <img className="employee-image" src={row.original.image ? API_URL + row.original.image : "images/no_image.png"} alt="Employee Avatar" />
                     </div>
+                    <Link className="btn-link" to={`/profile/${row.original.user_id}`} >{row.original.user_name}</Link>
                 </span>,
             },
             {
-                Header: 'Name',
-                accessor: 'name',
-                Cell: row => <Link className="employee-name" to={`${BASE_URL}profile/${row.original.id}`}>{row.original.name}</Link>,
+                Header: 'Date',
+                accessor: 'date',
             },
             {
-                Header: 'Email',
-                accessor: 'email',
+                Header: 'Amount',
+                accessor: 'amount',
             },
             {
-                Header: 'Designation',
-                accessor: 'designation',
+                Header: 'Purpose',
+                accessor: 'note',
             },
             {
-                Header: 'Department',
-                accessor: 'department_name',
+                Header: 'Status',
+                accessor: 'status',
+                Cell: row => <span>{(Number(row.original.status) === 0 && <span className="bg-secondary">Pending</span>) || (Number(row.original.status) === 1 && <span className="bg-success">Approve</span>) || (Number(row.original.status) === 2 && <span className="bg-danger">Rejected</span>)}</span>,
             },
             {
-                Header: 'Supervisor',
-                accessor: 'supervisor_name',
-            },
-            {
-                Header: 'Type',
-                accessor: 'type',
-                Cell: row => <span>{(Number(row.original.type) === 1 && "Full Time") || (Number(row.original.type) === 2 && "Part Time") || (Number(row.original.type) === 3 && "Contact") || (Number(row.original.type) === "4" && "Remote")}</span>,
-            },
-            {
-                Header: 'Casual Leave',
-                accessor: 'casual_leave',
-            },
-            {
-                Header: 'Sick Leave',
-                accessor: 'sick_leave',
-            },
-            {
-                Header: 'Salary',
-                accessor: 'salary',
-            },
-            {
-                Header: 'Probation Period',
-                accessor: 'probation_period',
+                Header: 'Action',
+                Cell: row => this.accessHandler(row.original),
             },
         ];
         let { data, limit, loading, actionType, editData, isModalOpen } = this.state
@@ -132,11 +122,11 @@ class User extends Component {
                             <div className="col-md-12">
                                 <div className="card">
                                     <div className="card-header">
-                                        <strong className="card-title">Employee Lists</strong>
+                                        <strong className="card-title">Department Lists</strong>
                                         <button className="btn btn-primary float-right" onClick={() => this.setState({
                                             actionType: "ADD",
                                             isModalOpen: true
-                                        })}>Add New</button>
+                                        })}>Apply for Conveyance</button>
                                     </div>
                                     <div className="card-body">
                                         <ReactTable
@@ -147,6 +137,7 @@ class User extends Component {
                                             noDataText='No rows found!'
                                             loading={loading}
                                         />
+
                                         {isModalOpen &&
                                             <EntryForm
                                                 isOpen={isModalOpen}
@@ -165,4 +156,7 @@ class User extends Component {
         )
     }
 }
-export default connect(null, { deleteData })(User)
+const mapStateToProps = state => ({
+    auth: state.auth,
+})
+export default connect(mapStateToProps, { rejectData, approveData })(Conveyance)

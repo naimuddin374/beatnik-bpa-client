@@ -1,65 +1,108 @@
 import React, { Component, Fragment } from 'react';
-import { BASE_URL, API_URL } from '../../store/actions/types';
+import { API_URL } from '../../store/actions/types';
 import Axios from 'axios';
 import ProfileInfo from './ProfileInfo';
 import Leave from './Leave';
 import { connect } from 'react-redux';
+import Loading from './../layout/Loading';
+// import EditProfile from './EditProfile';
+import { Button } from 'react-bootstrap';
+import UpdateProfilePhoto from './edit/UpdateProfilePhoto';
+
 
 class EmployeeProfile extends Component {
-    state = {
-        user: [],
-        authUser: this.props.auth.user
+    constructor(props) {
+        super(props)
+        this.state = {
+            user: [],
+            authUser: props.auth.user,
+            isLoading: true,
+            isOpen: false,
+        }
     }
-    componentDidMount() {
+    actionIsDone = () => {
+        this.setState({ isOpen: false })
+        setTimeout(() => {
+            this.dataFetch()
+        }, 500)
+    }
+    dataFetch = () => {
         Axios.get(`${API_URL}api/user-info/${this.props.match.params.id}`)
             .then(res => {
                 this.setState({
-                    user: res.data[0]
+                    user: Object.keys(res.data).length !== 0 ? res.data[0] : [],
+                    isLoading: false
                 })
             })
             .catch(error => console.log(error.response))
     }
+    componentDidMount() {
+        this.dataFetch()
+    }
     render() {
-        let { user, authUser } = this.state
+        let { user, authUser, isLoading, isOpen } = this.state
         return (
             <Fragment>
                 <div className="content">
-                    {Object.keys(user).length !== 0 &&
-                        <section>
-                            <div className="animated fadeIn">
-                                <div className="row">
-                                    <div className="col-md-10 offset-1">
-                                        <div className="feed-box text-center">
-                                            <section className="card">
-                                                <div className="card-body">
-                                                    <img className="align-self-center rounded-circle mr-3" width="200" height="200" alt="ProfilePicture" src={user.image ? API_URL + user.image : `${BASE_URL}/images/admin.jpg`} />
-                                                    <h2>{user.name}</h2>
-                                                    <h4>{user.designation}</h4>
-                                                    <div className="card-text text-sm-center">
+                    <div className="animated fadeIn">
+                        <div className="feed-box text-center">
+                            {isLoading && <Loading />}
+                            <section className="card">
+                                <div className="card-body">
+                                    {Object.keys(user).length !== 0 &&
+                                        <div className="row">
+                                            <div className="col-lg-3">
+                                            <img height="100" alt="ProfilePicture" src={user.image ? API_URL + user.image : `/images/no_image.png`} />
+                                                <h3>{user.name}</h3>
+                                                <h4>{user.designation}</h4>
+                                                <h4>{user.department_name}</h4>
+                                                {/* <div className="card-text">
                                                         {user.facebook && <a href={`${user.facebook}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-facebook pr-1"></i></a>}
                                                         {user.linkedin && <a href={`${user.linkedin}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-linkedin pr-1"></i></a>}
                                                         {user.twitter && <a href={`${user.twitter}`} target="_blank" rel="noopener noreferrer"><i className="fa fa-twitter pr-1"></i></a>}
-                                                    </div>
-                                                    <p className="boi-padding">{user.bio}</p>
-                                                </div>
-                                            </section>
-                                        </div>
-                                    </div>
-                                </div>
-                                <ProfileInfo
-                                    user={user}
-                                    authUser={authUser}
-                                />
-                            </div>
+                                                    </div> */}
 
-                            {(authUser.role === 2 || (authUser.id === user.id) || (authUser.role === 3 && authUser.id === user.supervisor_id)) &&
-                                <Leave
-                                    userId={user.id}
-                                />
-                            }
-                        </section>
-                    }
+                                            {Number(user.id) === Number(authUser.id) &&
+                                                    <Button
+                                                        type="button"
+                                                        variant="dark"
+                                                        size="sm"
+                                                        onClick={() => this.setState({
+                                                            isOpen: true
+                                                        })}
+                                                    >
+                                                        <i className="fa fa-pencil" /> Change Photo
+                                                            </Button>}
+                                            </div>
+                                            <div className="col-lg-7">
+                                                <p>{user.bio}</p>
+                                            </div>
+                                        </div>}
+                                </div>
+                            </section>
+                        </div>
+                        <ProfileInfo
+                            user={user}
+                            authUser={authUser}
+                            actionIsDone={this.actionIsDone}
+                        />
+                    </div>
                 </div>
+
+                {(Number(authUser.role) === 2 || (Number(authUser.id) === Number(user.id)) || (Number(authUser.role) === 3 && Number(authUser.id) === Number(user.supervisor_id))) &&
+                    <Leave
+                        userId={user.id}
+                    />
+                }
+                {isOpen &&
+                    <UpdateProfilePhoto
+                        isOpen={isOpen}
+                        isClose={() => this.setState({ isOpen: false })}
+                        actionIsDone={this.actionIsDone}
+                        userId={user.id}
+                        userImage={user.image}
+                    />}
+
             </Fragment>
         )
     }

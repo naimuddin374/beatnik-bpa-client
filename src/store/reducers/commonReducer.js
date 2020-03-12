@@ -1,4 +1,4 @@
-import { SET_MESSAGE, ACTION_STATUS, PROFILE_EDIT_STATUS, EMP_ADD_STATUS, PASS_UPDATE_STATUS, DEPARTMENT_ADD_STATUS, LEAVE_MAN_STATUS, MEETING_ROOM_BOOK } from '../actions/types'
+import * as Types from '../actions/types'
 
 const init = {
     message: null,
@@ -11,11 +11,13 @@ const init = {
     departmentStatus: 0,
     leaveStatus: 0,
     meetingRoomStatus: 0,
+    conveyanceStatus: 0,
+    updateProfilePhoto: 0,
 }
 
 const commonReducer = (state = init, action) => {
     switch (action.type) {
-        case SET_MESSAGE:
+        case Types.SET_MESSAGE:
             {
                 return {
                     ...state,
@@ -25,7 +27,7 @@ const commonReducer = (state = init, action) => {
                     actionStatus: action.payload.type === "error" ? 3 : 4
                 }
             }
-        case ACTION_STATUS:
+        case Types.ACTION_STATUS:
             {
                 return {
                     ...state,
@@ -33,46 +35,60 @@ const commonReducer = (state = init, action) => {
                     message: null,
                 }
             }
-        case PROFILE_EDIT_STATUS:
+        case Types.PROFILE_EDIT_STATUS:
             {
                 return {
                     ...state,
                     profileEditStatus: action.payload || 0,
                 }
             }
-        case PASS_UPDATE_STATUS:
+        case Types.EDIT_PROFILE_PHOTO:
+            {
+                return {
+                    ...state,
+                    updateProfilePhoto: action.payload || 0,
+                }
+            }
+        case Types.PASS_UPDATE_STATUS:
             {
                 return {
                     ...state,
                     passUpdateStatus: action.payload || 0,
                 }
             }
-        case EMP_ADD_STATUS:
+        case Types.EMP_ADD_STATUS:
             {
                 return {
                     ...state,
                     employeeStatus: action.payload || 0,
                 }
             }
-        case DEPARTMENT_ADD_STATUS:
+        case Types.DEPARTMENT_ADD_STATUS:
             {
                 return {
                     ...state,
                     departmentStatus: action.payload || 0,
                 }
             }
-        case LEAVE_MAN_STATUS:
+        case Types.LEAVE_MAN_STATUS:
             {
                 return {
                     ...state,
                     leaveStatus: action.payload || 0,
                 }
             }
-        case MEETING_ROOM_BOOK:
+        case Types.MEETING_ROOM_BOOK:
             {
                 return {
                     ...state,
                     meetingRoomStatus: action.payload || 0,
+                }
+            }
+        case Types.CONVEYANCE_STATUS:
+            {
+                return {
+                    ...state,
+                    conveyanceStatus: action.payload || 0,
                 }
             }
         default:
