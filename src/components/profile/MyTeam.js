@@ -50,9 +50,9 @@ class MyTeam extends Component {
                                                     <th rowSpan="2">Name</th>
                                                     <th>Designation</th>
                                                     <th>Email</th>
-                                                    <th>Contact Number</th>
                                                     <th>Available Casual</th>
                                                     <th>Available Sick</th>
+                                                    <th>Contact Number</th>
                                                     <th>Joining Date</th>
                                                     <th>View More</th>
                                                 </tr>

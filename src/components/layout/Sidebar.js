@@ -1,11 +1,15 @@
 import React, { Component, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import logo from '../assets/images/logo2.png';
+import { Collapse } from 'react-collapse';
+
 
 class Sidebar extends Component {
     state = {
         pathName: window.location.pathname,
-        user: this.props.auth.user
+        user: this.props.auth.user,
+        isConveyance: false
     }
     // static getDerivedStateFromProps(nextProps, prevState) {
     //     if (JSON.stringify(nextProps.auth.user) === JSON.stringify(prevState.auth)) return null
@@ -17,11 +21,14 @@ class Sidebar extends Component {
     //     }
     // }
     render() {
-        let { pathname, user } = this.state
+        let { pathname, user, isConveyance } = this.state
         return (
             <Fragment>
                 <aside id="left-panel" className="left-panel bg-dark">
                     <nav className="navbar navbar-expand-sm navbar-default bg-dark">
+                        <Link to="/">
+                            <img className="header-logo" src={logo} alt="BeatnikLogo" />
+                        </Link>
                         <div id="main-menu" className="main-menu collapse navbar-collapse">
                             <ul className="nav navbar-nav">
                                 <li className={pathname === "/" ? "active" : ''}>
@@ -31,7 +38,14 @@ class Sidebar extends Component {
                                     <Link to='/meeting'><i className="menu-icon fa fa-users" />Meeting </Link>
                                 </li>
                                 <li className={pathname === "conveyance" ? "active" : ''}>
-                                    <Link to='/conveyance'><i className="menu-icon fa fa-money" />Conveyance</Link>
+                                    {/* <Link to='/conveyance'><i className="menu-icon fa fa-money" />Conveyance</Link> */}
+                                    <Link onClick={() => this.setState({ isConveyance: !isConveyance })} to='#blank' ><i className="menu-icon fa fa-money" />Conveyance</Link>
+                                    <Collapse isOpened={isConveyance}>
+                                        <ul className="sub-menu-ul-area">
+                                            <li><Link to='/conveyance' >Add New</Link></li>
+                                            <li><Link to='/conveyance' >List</Link></li>
+                                        </ul>
+                                    </Collapse>
                                 </li>
                                 <li className={pathname === "leave" ? "active" : ''}>
                                     <Link to='/leave'><i className="menu-icon fa fa-laptop" />Leave </Link>

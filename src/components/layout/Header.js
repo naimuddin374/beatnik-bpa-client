@@ -23,7 +23,7 @@ class Header extends Component {
             <Fragment>
                 <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="header-menu-area">
                     <Link to="/">
-                        <img className="header-logo" src={logo} alt="BeatnikLogo" />
+                        {/* <img className="header-logo" src={logo} alt="BeatnikLogo" /> */}
                     </Link>
                     <Nav>
                         <img className="user-avatar" src={user.image ? `${API_URL + user.image}` : '/images/no_image.png'} alt="User Avatar" />

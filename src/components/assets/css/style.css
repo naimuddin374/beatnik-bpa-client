@@ -57,7 +57,8 @@ button[disabled] {
 }
 
 img.header-logo {
-  max-height: 40px;
+  width: 100%;
+  padding: 15px;
 }
 
 /* Sidebar */
@@ -67,14 +68,14 @@ aside.left-panel {
   height: 100vh;
   padding: 0;
   vertical-align: top;
-  width: 16%;
+  width: 14%;
   float: left;
   -webkit-box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
   box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
   position: fixed;
   left: 0;
   bottom: 0;
-  top: 55px;
+  /* top: 55px; */
   z-index: 999;
 }
 
@@ -117,6 +118,11 @@ aside.left-panel:hover {
   padding: 0;
   text-transform: uppercase;
   width: 100%;
+}
+
+ul.sub-menu-ul-area li {
+  font-size: 24px;
+  color: #fff;
 }
 
 .left-panel .navbar .navbar-nav {

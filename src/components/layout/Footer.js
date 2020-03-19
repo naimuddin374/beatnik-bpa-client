@@ -11,7 +11,7 @@ class Footer extends React.Component {
                             <div className="col-sm-6">
                                 Copyright &copy; 2020 Beatnik
                     </div>
-                            <div className="col-sm-6 text-right">
+                            <div className="col-sm-6 text-right pr-5">
                                 Designed by <a target="_blank" href="https://beatnik.technology/" rel="noopener noreferrer">Beatnik Technology</a>
                             </div>
                         </div>
