@@ -54,7 +54,7 @@ class AudienceSection extends Component {
         return inputValue;
     };
     render() {
-        let { users, selected, meetingId } = this.state
+        let { users } = this.state
 
         const filterColors = inputValue => {
             return users.filter(i =>

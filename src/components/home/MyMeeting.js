@@ -74,28 +74,19 @@ class MyMeeting extends Component {
         ];
         return (
             <Fragment>
-                <div className="content">
-                    <div className="animated fadeIn">
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="card">
-                                    <div className="card-header">
-                                        <strong className="card-title">Meeting List</strong>
-                                    </div>
-
-                                    <div className="card-body">
-                                        <ReactTable
-                                            data={data}
-                                            columns={columns}
-                                            defaultPageSize={limit}
-                                            minRows={1}
-                                            noDataText='No rows found!'
-                                            loading={loading}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="card">
+                    <div className="card-header">
+                        <strong className="card-title">Meeting List</strong>
+                    </div>
+                    <div className="card-body">
+                        <ReactTable
+                            data={data}
+                            columns={columns}
+                            defaultPageSize={limit}
+                            minRows={1}
+                            noDataText='No rows found!'
+                            loading={loading}
+                        />
                     </div>
                 </div>
             </Fragment>

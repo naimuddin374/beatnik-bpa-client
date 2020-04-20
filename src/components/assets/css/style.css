@@ -39,7 +39,7 @@ button[disabled] {
 /* Menu Style */
 .header-menu-area {
   justify-content: space-between !important;
-  position: fixed;
+  position: fixed !important;
   width: 100%;
   top: 0;
   z-index: 1;
@@ -58,7 +58,7 @@ button[disabled] {
 
 img.header-logo {
   width: 100%;
-  padding: 15px;
+  /* padding: 15px; */
 }
 
 /* Sidebar */
@@ -68,7 +68,7 @@ aside.left-panel {
   height: 100vh;
   padding: 0;
   vertical-align: top;
-  width: 14%;
+  width: 15%;
   float: left;
   -webkit-box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
   box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
@@ -120,9 +120,14 @@ aside.left-panel:hover {
   width: 100%;
 }
 
+ul.sub-menu-ul-area {
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
 ul.sub-menu-ul-area li {
-  font-size: 24px;
   color: #fff;
+  /* height: 28px; */
 }
 
 .left-panel .navbar .navbar-nav {
@@ -132,7 +137,7 @@ ul.sub-menu-ul-area li {
 
 .left-panel .navbar .navbar-nav>li {
   padding-left: 30px;
-  padding-right: 30px;
+  /* padding-right: 30px; */
 }
 
 .left-panel .navbar .navbar-nav>li.active {
@@ -141,6 +146,7 @@ ul.sub-menu-ul-area li {
 
 .left-panel .navbar .navbar-nav li {
   width: 100%;
+  list-style: none;
 }
 
 .left-panel .navbar .navbar-nav li.active .menu-icon,
@@ -156,10 +162,10 @@ ul.sub-menu-ul-area li {
 .left-panel .navbar .navbar-nav li>a {
   background: none !important;
   color: #FFFFFF;
-  display: inline-block;
-  font-size: 14px;
+  display: flex;
+  font-size: 13px;
   line-height: 26px;
-  padding: 10px 0;
+  padding: 5px 0;
   position: relative;
   width: 100%;
 }
@@ -172,8 +178,8 @@ ul.sub-menu-ul-area li {
 .left-panel .navbar .navbar-nav li>a .menu-icon {
   color: #FFFFFF;
   float: left;
-  margin-top: 8px;
-  width: 55px;
+  margin-top: 6px;
+  padding-right: 6px;
   text-align: left;
   z-index: 9;
 }
@@ -452,7 +458,8 @@ ul.sub-menu-ul-area li {
   background: #f1f2f7;
   position: absolute;
   margin-top: 55px;
-  width: 84%;
+  /* margin-top: 0; */
+  width: 85%;
   float: left;
   right: 0;
 }
@@ -960,7 +967,7 @@ header .form-inline .search-form.close {
 
 .content {
   float: left;
-  padding: 1.875em;
+  padding: 0;
   width: 100%;
 }
 
@@ -1354,3 +1361,59 @@ img.employee-image {
 /* tr>td {
   width: 64px;
 } */
+
+
+/* message section */
+.project-detail-header {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.message-show-body {
+  /* height: 63vh; */
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #fff;
+  padding-left: 10px;
+  margin-top: 15px;
+}
+
+.message-form-area {
+  /* position: absolute; */
+  width: 100%;
+  bottom: 0;
+  right: 0;
+}
+
+.project-detail-content-area {
+  overflow: hidden;
+}
+
+.project-detail-collapse {
+  text-align: right;
+  width: 100%;
+  right: 0;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  padding-right: 20px;
+}
+
+.height-63vh {
+  height: 63vh;
+}
+
+.height-38vh {
+  height: 38vh;
+}
+
+.message-image {
+  max-width: 50%;
+}
+
+ul.sub-menu-ul-area li>a {
+  padding: 3px 0 !important;
+}

@@ -8,7 +8,7 @@ class Home extends Component {
     render() {
         return (
             <Fragment>
-                <div className="content">
+                <div className="content m-0 p-0">
                     <div className="animated fadeIn">
                         <MyMeeting />
                         <div className="clearfix"></div>

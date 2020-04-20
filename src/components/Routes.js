@@ -16,6 +16,9 @@ import MeetingDetail from './meeting/MeetingDetail';
 import Conveyance from './conveyance/Conveyance';
 import ResetPassword from './auth/ResetPassword';
 import MyTeam from './profile/MyTeam';
+import Project from './project/Project';
+import ProjectDetail from './project/ProjectDetail';
+
 
 
 class Routes extends React.Component {
@@ -29,6 +32,8 @@ class Routes extends React.Component {
 
                     <div id="right-panel" className="right-panel">
                         <Switch>
+                            <Route path='/project-detail/:id' component={ProjectDetail} history={this.props.history} />
+                            <Route path='/project' component={Project} history={this.props.history} />
                             <Route path='/my-team' component={MyTeam} history={this.props.history} />
                             <Route path='/meeting' component={Meeting} history={this.props.history} />
                             <Route path='/meeting-detail/:id' component={MeetingDetail} history={this.props.history} />

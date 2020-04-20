@@ -62,9 +62,15 @@ button.sign-in-btn:hover {
     border-color: #66d7e5;
 }
 
-.forgot-password-area h4 {
-    margin-top: 20px;
-    text-decoration: underline;
+.forgot-password-area p {
     color: #000;
     cursor: pointer;
+}
+
+.left-logo {
+    text-align: center;
+}
+
+.left-logo img {
+    width: 40%;
 }

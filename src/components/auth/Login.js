@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { login, forgotPassword } from '../../store/actions/authActions'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import logo from '../assets/images/logo.png';
+// import logo from '../assets/images/logo.png';
+import logo from '../assets/images/beatnik-time-white-logo.png';
 import './Style.css';
 
 class Login extends React.Component {
@@ -94,10 +95,10 @@ class Login extends React.Component {
                                 <Button type="submit" className="sign-in-btn" disabled={!isDone} block>{actionStatus === 1 ? `Please Wait...` : (isForgot ? "Submit" : "Sign In")}</Button>
                             </Form>
 
-                            <div className="forgot-password-area">
+                            <div className="forgot-password-area mt-3">
                                 {!isForgot ?
-                                    <h4 onClick={() => this.setState({ isForgot: true })}>Forgot Password?</h4>
-                                    : <h4 onClick={() => this.setState({ isForgot: false })}>Sign In</h4>
+                                    <p onClick={() => this.setState({ isForgot: true })}>Forgot Password?</p>
+                                    : <p onClick={() => this.setState({ isForgot: false })}>Sign In</p>
                                 }
                             </div>
                         </div>

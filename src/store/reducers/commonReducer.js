@@ -13,6 +13,8 @@ const init = {
     meetingRoomStatus: 0,
     conveyanceStatus: 0,
     updateProfilePhoto: 0,
+    projectStatus: 0,
+    messageStatus: 0,
 }
 
 const commonReducer = (state = init, action) => {
@@ -89,6 +91,20 @@ const commonReducer = (state = init, action) => {
                 return {
                     ...state,
                     conveyanceStatus: action.payload || 0,
+                }
+            }
+        case Types.PROJECT_STATUS:
+            {
+                return {
+                    ...state,
+                    projectStatus: action.payload || 0,
+                }
+            }
+        case Types.MESSAGE_STATUS:
+            {
+                return {
+                    ...state,
+                    messageStatus: action.payload || 0,
                 }
             }
         default:

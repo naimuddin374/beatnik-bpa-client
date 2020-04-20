@@ -2,21 +2,26 @@ import React, { Component, Fragment } from 'react'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import EntryForm from './EntryForm'
-import { deleteData } from '../../store/actions/departmentActions'
 import { connect } from 'react-redux';
 import Axios from 'axios'
 import { API_URL } from '../../store/actions/types'
+import { Link } from 'react-router-dom';
 
-class Department extends Component {
-    state = {
-        data: [],
-        editData: {},
-        isModalOpen: false,
-        loading: true,
-        page: 1,
-        limit: 10,
-        pages: -1,
-        actionType: 'ADD',
+
+class Project extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+            editData: {},
+            isModalOpen: false,
+            loading: true,
+            page: 1,
+            limit: 10,
+            pages: -1,
+            actionType: 'ADD',
+            authUser: props.auth.user
+        }
     }
     componentDidMount() {
         this.onFetchData()
@@ -32,8 +37,12 @@ class Department extends Component {
             this.onFetchData()
         }, 500)
     }
-    deleteHandler = id => {
-        this.props.deleteData(id)
+    approveHandler = id => {
+        setTimeout(() => {
+            this.onFetchData()
+        }, 500)
+    }
+    rejectHandler = id => {
         setTimeout(() => {
             this.onFetchData()
         }, 500)
@@ -44,7 +53,7 @@ class Department extends Component {
             data: [],
             editData: {},
         })
-        Axios.get(`${API_URL}api/department`)
+        Axios.get(`${API_URL}api/project`)
             .then(res => {
                 this.setState({
                     loading: false,
@@ -53,15 +62,37 @@ class Department extends Component {
             })
             .catch(error => console.log(error.response))
     }
+    accessHandler = data => {
+        let { authUser } = this.state
+        if (Number(authUser.role) !== 5 || Number(data.status) !== 0) return null
+        return <span>
+            <button className="btn btn-success mr-2 btn-sm" onClick={() => window.confirm('Are you sure?') && this.approveHandler(data.id)}><i className="fa fa-check"></i></button>
+            <button className="btn btn-danger ml-2 btn-sm" onClick={() => window.confirm('Are you sure?') && this.rejectHandler(data.id)}><i className="fa fa-close"></i></button>
+        </span>
+    }
     render() {
         const columns = [
             {
                 Header: 'Name',
                 accessor: 'name',
+                Cell: row => <Link to={`/project-detail/${row.original.id}`}>{row.original.name}</Link>,
+            },
+            {
+                Header: 'Description',
+                accessor: 'description',
+            },
+            {
+                Header: 'Dateline',
+                accessor: 'dateline',
+            },
+            {
+                Header: 'Status',
+                accessor: 'status',
+                Cell: row => <span>{(Number(row.original.status) === 1 && "Pitch") || (Number(row.original.status) === 2 && "Active") || (Number(row.original.status) === 3 && "Completed") || (Number(row.original.status) === 4 && "Archive")}</span>,
             },
             {
                 Header: 'Action',
-                Cell: row => <span><button className="btn btn-primary btn-sm" onClick={() => window.confirm('Are you sure?') && this.setState({
+                Cell: row => <span><button className="btn btn-primary btn-sm" onClick={() => this.setState({
                     actionType: "EDIT",
                     editData: row.original,
                     isModalOpen: true
@@ -75,7 +106,7 @@ class Department extends Component {
             <Fragment>
                 <div className="card">
                     <div className="card-header">
-                        <strong className="card-title">Department Lists</strong>
+                        <strong className="card-title">Project Lists</strong>
                         <button className="btn btn-primary float-right" onClick={() => this.setState({
                             actionType: "ADD",
                             isModalOpen: true
@@ -105,4 +136,7 @@ class Department extends Component {
         )
     }
 }
-export default connect(null, { deleteData })(Department)
+const mapStateToProps = state => ({
+    auth: state.auth,
+})
+export default connect(mapStateToProps)(Project)

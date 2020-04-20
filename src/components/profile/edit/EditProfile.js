@@ -4,7 +4,6 @@ import { updateProfileInfo } from '../../../store/actions/profileActions'
 import DatePicker from "react-datepicker";
 import dateFormat from 'dateformat';
 import "react-datepicker/dist/react-datepicker.css";
-import { API_URL } from '../../../store/actions/types';
 
 import Modal from 'react-bootstrap/Modal';
 import { Button, Form } from 'react-bootstrap';
@@ -54,7 +53,7 @@ class EditProfile extends Component {
         this.props.updateProfileInfo({ ...data }, data.id)
     }
     render() {
-        let { name, contact, personal_email, date_of_birth, blood_group, address, imgPath, bio, facebook, linkedin, twitter, actionStatus } = this.state
+        let { name, contact, personal_email, date_of_birth, blood_group, address, bio, actionStatus } = this.state
         let isDone = name && contact && actionStatus !== 1
         return (
             <Fragment>

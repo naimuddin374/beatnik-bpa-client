@@ -115,43 +115,43 @@ class Conveyance extends Component {
         let { data, limit, loading, actionType, editData, isModalOpen } = this.state
         return (
             <Fragment>
-                <div className="content">
+                {/* <div className="content">
                     <div className="animated fadeIn">
                         <div className="row">
+                            <div className="col-md-12"> */}
 
-                            <div className="col-md-12">
-                                <div className="card">
-                                    <div className="card-header">
-                                        <strong className="card-title">Department Lists</strong>
-                                        <button className="btn btn-primary float-right" onClick={() => this.setState({
-                                            actionType: "ADD",
-                                            isModalOpen: true
-                                        })}>Apply for Conveyance</button>
-                                    </div>
-                                    <div className="card-body">
-                                        <ReactTable
-                                            data={data}
-                                            columns={columns}
-                                            defaultPageSize={limit}
-                                            minRows={1}
-                                            noDataText='No rows found!'
-                                            loading={loading}
-                                        />
+                <div className="card">
+                    <div className="card-header">
+                        <strong className="card-title">Conveyance Lists</strong>
+                        <button className="btn btn-primary float-right" onClick={() => this.setState({
+                            actionType: "ADD",
+                            isModalOpen: true
+                        })}>Apply for Conveyance</button>
+                    </div>
+                    <div className="card-body">
+                        <ReactTable
+                            data={data}
+                            columns={columns}
+                            defaultPageSize={limit}
+                            minRows={1}
+                            noDataText='No rows found!'
+                            loading={loading}
+                        />
 
-                                        {isModalOpen &&
-                                            <EntryForm
-                                                isOpen={isModalOpen}
-                                                isClose={this.closeModal}
-                                                actionIsDone={this.actionIsDone}
-                                                actionType={actionType}
-                                                editData={editData}
-                                            />}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {isModalOpen &&
+                            <EntryForm
+                                isOpen={isModalOpen}
+                                isClose={this.closeModal}
+                                actionIsDone={this.actionIsDone}
+                                actionType={actionType}
+                                editData={editData}
+                            />}
                     </div>
                 </div>
+                {/* </div>
+                        </div>
+                    </div>
+                </div> */}
             </Fragment>
         )
     }

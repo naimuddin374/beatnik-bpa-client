@@ -7,7 +7,6 @@ import { logout } from '../../store/actions/authActions';
 import { API_URL } from '../../store/actions/types';
 import { Link } from 'react-router-dom';
 import ChangePassword from '../profile/ChangePassword';
-import logo from '../assets/images/logo.png';
 
 class Header extends Component {
     constructor(props) {
@@ -26,7 +25,7 @@ class Header extends Component {
                         {/* <img className="header-logo" src={logo} alt="BeatnikLogo" /> */}
                     </Link>
                     <Nav>
-                        <img className="user-avatar" src={user.image ? `${API_URL + user.image}` : '/images/no_image.png'} alt="User Avatar" />
+                        <img className="user-avatar" src={user.image ? `${API_URL + user.image}` : '/images/no_image.png'} alt="pic" />
                         <NavDropdown title={user.name} id="collasible-nav-dropdown">
                             <Link className="dropdown-item" to={`/profile/${user.id}`}> <i className="fa fa-user"></i> Profile</Link>
                             <NavDropdown.Item href="#action" onClick={() => this.setState({ isModalOpen: true })}><i className="fa fa-lock"></i> Change Password</NavDropdown.Item>
